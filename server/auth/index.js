@@ -22,10 +22,11 @@ router.post("/signup", async (req, res, next) => {
         phone,
       });
 
-      res.value = getJwtTokenResponse({
-        id: user.id,
-      });
-      next();
+      res.json(
+        getJwtTokenResponse({
+          id: user.id,
+        })
+      );
     } catch (error) {
       if (error.name === "SequelizeUniqueConstraintError") {
         const errors = error.errors.map((e) => {
@@ -54,10 +55,11 @@ router.post("/signin", async (req, res, next) => {
       return;
     }
 
-    res.value = getJwtTokenResponse({
-      id: user.id,
-    });
-    next();
+    res.json(
+      getJwtTokenResponse({
+        id: user.id,
+      })
+    );
   });
 });
 
