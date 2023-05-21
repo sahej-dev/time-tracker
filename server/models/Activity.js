@@ -13,6 +13,10 @@ class Activity extends CustomModel {
           allowNull: false,
           primaryKey: true,
         },
+        label: {
+          type: DataTypes.TEXT,
+          allowNull: false,
+        },
         color: {
           type: DataTypes.BIGINT,
           allowNull: true,
