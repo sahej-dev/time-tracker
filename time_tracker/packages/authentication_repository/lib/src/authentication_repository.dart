@@ -40,6 +40,7 @@ class AuthenticationRepository {
       print("in login catch");
       print(e);
       _controller.add(AuthenticationStatus.unauthenticated);
+      throw e;
     }
   }
 
