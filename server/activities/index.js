@@ -6,9 +6,25 @@ const { isActivityOwnerOrSuperuser } = require("./utilities");
 
 const router = express.Router();
 
-router.get("/", allowOnlySuperuser, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   console.log("ACTIVITIES");
-  res.value = await Activity.findAll();
+  if (
+    req.query.by_user &&
+    (req.query.by_user === req.user.id || req.user.is_super_user)
+  ) {
+    res.value = await Activity.findAll({
+      where: { user_id: req.query.by_user },
+    });
+  } else if (req.user.is_super_user) {
+    res.value = await Activity.findAll();
+  } else {
+    return res.status(403).send("Forbidden");
+  }
+  next();
+});
+
+router.get("/by_user", async (req, res, next) => {
+  res.value = await Activity.findAll({ where: { user_id: req.user.id } });
   next();
 });
 
@@ -114,6 +130,8 @@ router.get("/:id", async (req, res, next) => {
   const activity = await Activity.findByPk(req.params.id);
   if (!isActivityOwnerOrSuperuser(req, activity))
     return res.status(403).end("Forbidden");
+
+  if (!activity) return res.status(401).end("invalid activity id provided");
 
   res.value = activity;
   next();

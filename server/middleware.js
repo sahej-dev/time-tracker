@@ -12,7 +12,7 @@ async function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
-  if (!token) return res.sendStatus(401);
+  if (!token) return res.status(401).end("invalid bearer token");
 
   jwt.verify(token, process.env.TOKEN_SECRET, async (err, user) => {
     if (process.env.NODE_ENV !== "production") console.log("AUTH ERR:", err);
