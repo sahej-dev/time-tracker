@@ -21,7 +21,7 @@ final lightColorScheme = ColorScheme.fromSeed(
   onErrorContainer: const Color(0xFF410002),
   background: const Color(0xFFFBFDF8),
   onBackground: const Color(0xFF191C1A),
-  surface: Color(0xFFFBFDF8),
+  surface: const Color(0xFFFBFDF8),
   onSurface: const Color(0xFF191C1A),
   surfaceVariant: const Color(0xFFDCE5DC),
   onSurfaceVariant: const Color(0xFF404943),

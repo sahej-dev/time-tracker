@@ -142,7 +142,7 @@ class _LoginButton extends StatelessWidget {
 }
 
 class _SignupPrompt extends StatelessWidget {
-  const _SignupPrompt({super.key});
+  const _SignupPrompt();
 
   @override
   Widget build(BuildContext context) {
