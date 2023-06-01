@@ -45,7 +45,7 @@ router.post("/signin", async (req, res, next) => {
 
   const user = await User.findOne({ where: { email } });
 
-  if (!user) res.status(403);
+  if (!user) return res.status(403).send("email id not registered");
 
   bcrypt.compare(password, user.password, function (err, result) {
     if (err) next(err);

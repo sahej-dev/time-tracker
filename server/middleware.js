@@ -8,7 +8,7 @@ async function allowOnlySuperuser(req, res, next) {
 
 async function authenticateToken(req, res, next) {
   console.log("in authenticate middleware");
-  if (req.url.includes("/auth")) next();
+  if (req.url.includes("/auth")) return next();
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
