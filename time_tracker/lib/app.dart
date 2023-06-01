@@ -101,7 +101,7 @@ class _AppViewState extends State<AppView> {
       title: 'Flutter Demo',
       theme: _buildTheme(Brightness.light, textThemeGenerator),
       darkTheme: _buildTheme(Brightness.dark, textThemeGenerator),
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.system,
       navigatorKey: _navigatorKey,
       builder: (context, child) {
         return BlocListener<AuthenticationBloc, AuthenticationState>(
