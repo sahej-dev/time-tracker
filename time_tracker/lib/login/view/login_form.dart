@@ -107,6 +107,7 @@ class _PasswordInput extends StatelessWidget {
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             labelText: 'Password',
+            hintText: "min. 8 characters",
             errorText:
                 state.password.displayError != null ? 'invalid password' : null,
           ),
