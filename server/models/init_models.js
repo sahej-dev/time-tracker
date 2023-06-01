@@ -1,8 +1,15 @@
-const { User, Activity, Icon, IconMetadata } = require("./index");
+const {
+  User,
+  Activity,
+  Icon,
+  IconMetadata,
+  ActivityInstance,
+} = require("./index");
 
 async function initModels() {
   await User.init();
   await Activity.init();
+  await ActivityInstance.init();
   await Icon.init();
   await IconMetadata.init();
 
@@ -17,6 +24,15 @@ async function initModels() {
     onDelete: "RESTRICT",
   });
   IconMetadata.hasMany(Icon, { as: "icons", foreignKey: "icon_metadata_id" });
+
+  ActivityInstance.belongsTo(Activity, {
+    foreignKey: "activity_id",
+    onDelete: "RESTRICT",
+  });
+  Activity.hasMany(ActivityInstance, {
+    as: "instances",
+    foreignKey: "activity_id",
+  });
 }
 
 exports.initModels = initModels;

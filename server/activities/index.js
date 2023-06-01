@@ -1,6 +1,12 @@
 const express = require("express");
 
-const { Activity, Icon, IconMetadata, User } = require("../models");
+const {
+  Activity,
+  Icon,
+  IconMetadata,
+  User,
+  ActivityInstance,
+} = require("../models");
 const { allowOnlySuperuser } = require("../middleware");
 const { isActivityOwnerOrSuperuser } = require("./utilities");
 
@@ -20,11 +26,6 @@ router.get("/", async (req, res, next) => {
   } else {
     return res.status(403).send("Forbidden");
   }
-  next();
-});
-
-router.get("/by_user", async (req, res, next) => {
-  res.value = await Activity.findAll({ where: { user_id: req.user.id } });
   next();
 });
 
@@ -134,6 +135,84 @@ router.get("/:id", async (req, res, next) => {
   if (!activity) return res.status(401).end("invalid activity id provided");
 
   res.value = activity;
+  next();
+});
+
+router.get("/:id/instances", async (req, res, next) => {
+  const activity = await Activity.findByPk(req.params.id, {
+    include: ActivityInstance,
+  });
+
+  if (!isActivityOwnerOrSuperuser(req, activity))
+    return res.status(403).end("Forbidden");
+
+  if (!activity) return res.status(401).end("invalid activity id provided");
+
+  res.value = activity.instances;
+  next();
+});
+
+router.post("/:id/instances", async (req, res, next) => {
+  const activity = await Activity.findByPk(req.params.id);
+
+  if (!isActivityOwnerOrSuperuser(req, activity))
+    return res.status(403).end("Forbidden");
+
+  if (!activity) return res.status(401).end("invalid activity id provided");
+
+  const { start_at, end_at, comment } = req.body;
+
+  res.value = await ActivityInstance.create({
+    start_at,
+    end_at,
+    comment,
+    activity_id: activity.id,
+  });
+  next();
+});
+
+router.put("/:id/instances/:instanceId", async (req, res, next) => {
+  const activityInstance = await ActivityInstance.findByPk(
+    req.params.instanceId,
+    {
+      include: Activity,
+    }
+  );
+
+  if (!activityInstance)
+    return res.status(401).end("invalid activityInstance id provided");
+
+  if (!isActivityOwnerOrSuperuser(req, activityInstance.activity))
+    return res.status(403).end("Forbidden");
+
+  const { start_at, end_at, comment, activity_id } = req.body;
+
+  res.value = await activityInstance.update({
+    start_at,
+    end_at,
+    comment,
+    activity_id,
+  });
+  next();
+});
+
+router.delete("/:id/instances/:instanceId", async (req, res, next) => {
+  const activityInstance = await ActivityInstance.findByPk(
+    req.params.instanceId,
+    {
+      include: Activity,
+    }
+  );
+
+  if (!activityInstance)
+    return res.status(401).end("invalid activityInstance id provided");
+
+  if (!isActivityOwnerOrSuperuser(req, activityInstance.activity))
+    return res.status(403).end("Forbidden");
+
+  await activityInstance.destroy();
+
+  res.value = activityInstance;
   next();
 });
 
