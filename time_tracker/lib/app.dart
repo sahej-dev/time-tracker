@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:user_repository/user_repository.dart';
 
@@ -14,7 +15,9 @@ import 'login/login.dart';
 import 'splash/splash.dart';
 
 class App extends StatefulWidget {
-  const App({super.key});
+  const App({super.key, required this.secureStorage});
+
+  final FlutterSecureStorage secureStorage;
 
   @override
   State<App> createState() => _AppState();
@@ -28,7 +31,7 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
     _authenticationRepository = AuthenticationRepository();
-    _userRepository = UserRepository();
+    _userRepository = UserRepository(secureStorage: widget.secureStorage);
   }
 
   @override

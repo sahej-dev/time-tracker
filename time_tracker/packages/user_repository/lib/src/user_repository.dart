@@ -3,16 +3,18 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:user_repository/src/models/models.dart';
+
+import 'models/models.dart';
 
 class UserRepository {
   User? _user;
 
-  final _secureStorage = FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-  );
-
   final _dio = Dio(BaseOptions(baseUrl: "http://10.0.2.2:2000/api/v1/users"));
+
+  final FlutterSecureStorage _secureStorage;
+
+  UserRepository({required FlutterSecureStorage secureStorage})
+      : _secureStorage = secureStorage;
 
   Future<User?> getUser() async {
     if (_user != null) return _user;

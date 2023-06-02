@@ -48,8 +48,8 @@ router.post(
       user_id = req.user.id,
       icon_id,
       icon_codepoint,
-      icon_family,
-      icon_package,
+      icon_family = null,
+      icon_package = null,
     } = req.body;
 
     let createdActivity;
@@ -64,7 +64,7 @@ router.post(
         user_id,
         icon_id,
       });
-    } else if (icon_codepoint && icon_family && icon_package) {
+    } else if (icon_codepoint) {
       const icons = await Icon.findAll({
         where: { codepoint: icon_codepoint },
         include: IconMetadata,
@@ -108,9 +108,7 @@ router.post(
     } else {
       return res
         .status(400)
-        .end(
-          "either icon_id, or all of icon_codepoint, icon_family, and icon_package must be provided"
-        );
+        .end("either icon_id, or icon_codepoint must be provided");
     }
 
     res.value = createdActivity;
@@ -234,7 +232,7 @@ router.put("/:id", async (req, res, next) => {
       color,
       icon_id,
     });
-  } else if (icon_codepoint && icon_family && icon_package) {
+  } else if (icon_codepoint) {
     const icons = await Icon.findAll({
       where: { codepoint: icon_codepoint },
       include: IconMetadata,
