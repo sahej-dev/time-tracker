@@ -10,7 +10,7 @@ import 'package:authentication_repository/authentication_repository.dart';
 
 import 'authentication/authentication.dart';
 import 'color_schemes.g.dart';
-import 'home_page.dart';
+import 'activities/activities.dart';
 import 'login/login.dart';
 import 'splash/splash.dart';
 
@@ -112,7 +112,7 @@ class _AppViewState extends State<AppView> {
             switch (state.status) {
               case AuthenticationStatus.authenticated:
                 _navigator.pushAndRemoveUntil<void>(
-                  HomePage.route(),
+                  ActivitiesPage.route(),
                   (route) => false,
                 );
               case AuthenticationStatus.unauthenticated:
