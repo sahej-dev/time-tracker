@@ -67,11 +67,12 @@ router.post(
     } else if (icon_codepoint) {
       const icons = await Icon.findAll({
         where: { codepoint: icon_codepoint },
-        include: IconMetadata,
+        include: { model: IconMetadata, as: "metadata" },
       });
 
       let icon;
       for (let i = 0; i < icons.length; i++) {
+        console.log(icons[i]);
         if (
           (icons[i].dataValues.metadata.font_family === icon_family,
           icons[i].dataValues.metadata.font_package === icon_package)
@@ -87,13 +88,13 @@ router.post(
         });
 
         if (!metadata) {
-          metadata = IconMetadata.create({
+          metadata = await IconMetadata.create({
             font_family: icon_family,
             font_package: icon_package,
           });
         }
 
-        icon = Icon.create({
+        icon = await Icon.create({
           codepoint: icon_codepoint,
           icon_metadata_id: metadata.dataValues.id,
         });
@@ -111,7 +112,13 @@ router.post(
         .end("either icon_id, or icon_codepoint must be provided");
     }
 
-    res.value = createdActivity;
+    res.value = await Activity.findByPk(createdActivity.id, {
+      include: {
+        model: Icon,
+        as: "icon",
+        include: { model: IconMetadata, as: "metadata" },
+      },
+    });
     next();
   }
 );
@@ -138,7 +145,7 @@ router.get("/:id", async (req, res, next) => {
 
 router.get("/:id/instances", async (req, res, next) => {
   const activity = await Activity.findByPk(req.params.id, {
-    include: ActivityInstance,
+    include: { model: ActivityInstance, as: "instances" },
   });
 
   if (!isActivityOwnerOrSuperuser(req, activity))
@@ -173,7 +180,7 @@ router.put("/:id/instances/:instanceId", async (req, res, next) => {
   const activityInstance = await ActivityInstance.findByPk(
     req.params.instanceId,
     {
-      include: Activity,
+      include: { model: Activity, as: "activity" },
     }
   );
 
@@ -198,7 +205,7 @@ router.delete("/:id/instances/:instanceId", async (req, res, next) => {
   const activityInstance = await ActivityInstance.findByPk(
     req.params.instanceId,
     {
-      include: Activity,
+      include: { model: Activity, as: "activity" },
     }
   );
 
@@ -235,7 +242,7 @@ router.put("/:id", async (req, res, next) => {
   } else if (icon_codepoint) {
     const icons = await Icon.findAll({
       where: { codepoint: icon_codepoint },
-      include: IconMetadata,
+      include: { model: IconMetadata, as: "metadata" },
     });
 
     let icon;
@@ -255,13 +262,13 @@ router.put("/:id", async (req, res, next) => {
       });
 
       if (!metadata) {
-        metadata = IconMetadata.create({
+        metadata = await IconMetadata.create({
           font_family: icon_family,
           font_package: icon_package,
         });
       }
 
-      icon = Icon.create({
+      icon = await Icon.create({
         codepoint: icon_codepoint,
         icon_metadata_id: metadata.dataValues.id,
       });
@@ -273,7 +280,7 @@ router.put("/:id", async (req, res, next) => {
       icon_id: icon.id,
     });
   } else {
-    activity.update({
+    await activity.update({
       label,
       color,
     });

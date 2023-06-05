@@ -22,7 +22,7 @@ Activity _$ActivityFromJson(Map<String, dynamic> json) {
 mixin _$Activity {
   String get id => throw _privateConstructorUsedError;
   String get label => throw _privateConstructorUsedError;
-  Icon get icon => throw _privateConstructorUsedError;
+  IconModel get icon => throw _privateConstructorUsedError;
   int? get color => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -36,9 +36,9 @@ abstract class $ActivityCopyWith<$Res> {
   factory $ActivityCopyWith(Activity value, $Res Function(Activity) then) =
       _$ActivityCopyWithImpl<$Res, Activity>;
   @useResult
-  $Res call({String id, String label, Icon icon, int? color});
+  $Res call({String id, String label, IconModel icon, int? color});
 
-  $IconCopyWith<$Res> get icon;
+  $IconModelCopyWith<$Res> get icon;
 }
 
 /// @nodoc
@@ -71,7 +71,7 @@ class _$ActivityCopyWithImpl<$Res, $Val extends Activity>
       icon: null == icon
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
-              as Icon,
+              as IconModel,
       color: freezed == color
           ? _value.color
           : color // ignore: cast_nullable_to_non_nullable
@@ -81,8 +81,8 @@ class _$ActivityCopyWithImpl<$Res, $Val extends Activity>
 
   @override
   @pragma('vm:prefer-inline')
-  $IconCopyWith<$Res> get icon {
-    return $IconCopyWith<$Res>(_value.icon, (value) {
+  $IconModelCopyWith<$Res> get icon {
+    return $IconModelCopyWith<$Res>(_value.icon, (value) {
       return _then(_value.copyWith(icon: value) as $Val);
     });
   }
@@ -95,10 +95,10 @@ abstract class _$$_ActivityCopyWith<$Res> implements $ActivityCopyWith<$Res> {
       __$$_ActivityCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String label, Icon icon, int? color});
+  $Res call({String id, String label, IconModel icon, int? color});
 
   @override
-  $IconCopyWith<$Res> get icon;
+  $IconModelCopyWith<$Res> get icon;
 }
 
 /// @nodoc
@@ -129,7 +129,7 @@ class __$$_ActivityCopyWithImpl<$Res>
       icon: null == icon
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
-              as Icon,
+              as IconModel,
       color: freezed == color
           ? _value.color
           : color // ignore: cast_nullable_to_non_nullable
@@ -139,7 +139,8 @@ class __$$_ActivityCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
+@JsonSerializable(explicitToJson: true)
 class _$_Activity implements _Activity {
   const _$_Activity(
       {required this.id, required this.label, required this.icon, this.color});
@@ -152,7 +153,7 @@ class _$_Activity implements _Activity {
   @override
   final String label;
   @override
-  final Icon icon;
+  final IconModel icon;
   @override
   final int? color;
 
@@ -194,7 +195,7 @@ abstract class _Activity implements Activity {
   const factory _Activity(
       {required final String id,
       required final String label,
-      required final Icon icon,
+      required final IconModel icon,
       final int? color}) = _$_Activity;
 
   factory _Activity.fromJson(Map<String, dynamic> json) = _$_Activity.fromJson;
@@ -204,7 +205,7 @@ abstract class _Activity implements Activity {
   @override
   String get label;
   @override
-  Icon get icon;
+  IconModel get icon;
   @override
   int? get color;
   @override

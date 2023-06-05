@@ -13,7 +13,7 @@ async function initialiseDatabaseConnection() {
 
   try {
     await initModels();
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
 
     // await User.create({
     //   first_name: "test",

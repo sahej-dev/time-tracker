@@ -52,6 +52,8 @@ dependencies:
     path: packages/authentication_repository
   user_repository:
     path: packages/user_repository
+  activities_repository:
+    path: packages/activities_repository
 
 dev_dependencies:
   flutter_test:

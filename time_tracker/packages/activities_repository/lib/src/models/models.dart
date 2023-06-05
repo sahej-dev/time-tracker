@@ -1,3 +1,3 @@
 export 'activity.dart';
-export 'icon.dart';
+export 'icon_model.dart';
 export 'icon_metadata.dart';

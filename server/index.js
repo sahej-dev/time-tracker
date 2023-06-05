@@ -90,7 +90,8 @@ app.use((err, req, res, next) => {
 });
 
 app.use("*", function removeFalseyValues(req, res, next) {
-  setNestedFalseyValuesToNull(res.value);
+  // console.log("RES VAL: ", res.value);
+  // setNestedFalseyValuesToNull(res.value);
   next();
 });
 

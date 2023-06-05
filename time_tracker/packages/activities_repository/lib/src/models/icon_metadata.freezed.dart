@@ -125,7 +125,8 @@ class __$$_IconMetadataCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
+@JsonSerializable(explicitToJson: true)
 class _$_IconMetadata implements _IconMetadata {
   const _$_IconMetadata(
       {required this.id,

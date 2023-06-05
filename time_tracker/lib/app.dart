@@ -1,3 +1,4 @@
+import 'package:activities_repository/activities_repository.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dynamic_color/dynamic_color.dart';
@@ -50,6 +51,11 @@ class _AppState extends State<App> {
         RepositoryProvider<UserRepository>.value(
           value: _userRepository,
         ),
+        RepositoryProvider(
+          create: (context) => ActivitiesRepository(
+            secureStorage: widget.secureStorage,
+          ),
+        )
       ],
       child: BlocProvider(
         create: (context) => AuthenticationBloc(

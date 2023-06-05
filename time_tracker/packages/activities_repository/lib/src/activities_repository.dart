@@ -82,6 +82,6 @@ class ActivitiesRepository {
       ),
     );
 
-    return Activity.fromJson(response.data as Map<String, Object?>);
+    return Activity.fromJson(response.data);
   }
 }
