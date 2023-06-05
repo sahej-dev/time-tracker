@@ -304,10 +304,31 @@ router.put("/:id", async (req, res, next) => {
 router.delete("/:id", async (req, res, next) => {
   try {
     const activity = await Activity.findByPk(req.params.id);
+    if (!activity) return res.status(401).end("invalid activity id");
+
     if (!isActivityOwnerOrSuperuser(req, activity))
       return res.status(403).end("Forbidden");
 
     await activity.destroy();
+    res.status(200).end();
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch("/:id", async (req, res, next) => {
+  try {
+    const activity = await Activity.findByPk(req.params.id, {
+      paranoid: false,
+    });
+    if (!activity) return res.status(401).end("invalid activity id");
+
+    if (!isActivityOwnerOrSuperuser(req, activity))
+      return res.status(403).end("Forbidden");
+
+    if (activity.isSoftDeleted()) {
+      await activity.restore();
+    }
     res.status(200).end();
   } catch (error) {
     next(error);

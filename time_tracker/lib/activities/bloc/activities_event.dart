@@ -1,11 +1,13 @@
 part of 'activities_bloc.dart';
 
-abstract class ActivitiesEvent extends Equatable {}
+abstract class ActivitiesEvent extends Equatable {
+  const ActivitiesEvent();
+}
 
 class ActivitiesFetchRequested extends ActivitiesEvent {
   final String userId;
   final bool force;
-  ActivitiesFetchRequested({required this.userId, this.force = false});
+  const ActivitiesFetchRequested({required this.userId, this.force = false});
 
   @override
   List<Object?> get props => [force];
@@ -14,8 +16,24 @@ class ActivitiesFetchRequested extends ActivitiesEvent {
 class ActivitiesNewAdded extends ActivitiesEvent {
   final Activity activity;
 
-  ActivitiesNewAdded({required this.activity});
+  const ActivitiesNewAdded({required this.activity});
 
   @override
   List<Object?> get props => [activity];
+}
+
+class ActivitiesDeleted extends ActivitiesEvent {
+  final Activity activity;
+
+  const ActivitiesDeleted({required this.activity});
+
+  @override
+  List<Object?> get props => [activity];
+}
+
+class ActivitiesTryUndoLastDeleted extends ActivitiesEvent {
+  const ActivitiesTryUndoLastDeleted();
+
+  @override
+  List<Object?> get props => [];
 }

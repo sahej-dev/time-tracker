@@ -52,39 +52,56 @@ class _ActivitiesPageView extends StatelessWidget {
                   itemCount: state.activities.length,
                   itemBuilder: (context, index) {
                     final activity = state.activities[index];
-                    final color = Color(
-                      activity.color ??
-                          Theme.of(context).colorScheme.surfaceTint.value,
-                    ).harmonizeWith(Theme.of(context).colorScheme.primary);
                     return GridTile(
-                      child: Card(
-                        clipBehavior: Clip.antiAlias,
-                        elevation: 12,
-                        shadowColor: Colors.transparent,
-                        surfaceTintColor: color,
-                        child: InkWell(
-                          onTap: () {},
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Icon(
-                                IconData(
-                                  activity.icon.codepoint,
-                                  fontFamily: activity.icon.metadata.fontFamily,
-                                  fontPackage:
-                                      activity.icon.metadata.fontPackage,
-                                ),
-                                color: color,
-                                size: kDefaultIconSize * 1.5,
-                              ),
-                              Text(
-                                activity.label,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                        ),
+                      child: ActivityTile(
+                        activity: activity,
+                        onLongPress: () {
+                          final ActivitiesBloc bloc =
+                              context.read<ActivitiesBloc>();
+
+                          showModalBottomSheet(
+                            clipBehavior: Clip.antiAlias,
+                            context: context,
+                            builder: (context) {
+                              return Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ListTile(
+                                    title: const Text("Edit"),
+                                    leading: const Icon(Icons.edit),
+                                    onTap: () {},
+                                  ),
+                                  ListTile(
+                                    title: const Text("Delete"),
+                                    leading: const Icon(Icons.delete),
+                                    onTap: () {
+                                      bloc.add(
+                                        ActivitiesDeleted(activity: activity),
+                                      );
+                                      ScaffoldMessenger.of(context)
+                                        ..hideCurrentSnackBar()
+                                        ..showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                                'Deleted activity ${activity.label}'),
+                                            action: SnackBarAction(
+                                              label: 'Undo',
+                                              onPressed: () {
+                                                bloc.add(
+                                                    const ActivitiesTryUndoLastDeleted());
+                                              },
+                                            ),
+                                            showCloseIcon: true,
+                                          ),
+                                        );
+                                      Navigator.pop(context);
+                                    },
+                                  )
+                                ],
+                              );
+                            },
+                          );
+                        },
                       ),
                     );
                   },
@@ -105,6 +122,62 @@ class _ActivitiesPageView extends StatelessWidget {
         },
       )),
       floatingActionButton: const _AddActivityFloatingActionButton(),
+    );
+  }
+}
+
+class ActivityTile extends StatelessWidget {
+  const ActivityTile({
+    super.key,
+    required this.activity,
+    this.onTap,
+    this.onLongPress,
+  });
+
+  final Activity activity;
+  final void Function()? onTap;
+  final void Function()? onLongPress;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color color = Color(
+      activity.color ?? Theme.of(context).colorScheme.surfaceTint.value,
+    ).harmonizeWith(Theme.of(context).colorScheme.primary);
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      elevation: 12,
+      shadowColor: Colors.transparent,
+      surfaceTintColor: color,
+      child: InkWell(
+        onTap: onTap,
+        onLongPress: onLongPress,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Icon(
+              IconData(
+                activity.icon.codepoint,
+                fontFamily: activity.icon.metadata.fontFamily,
+                fontPackage: activity.icon.metadata.fontPackage,
+              ),
+              color: color,
+              size: kDefaultIconSize * 1.5,
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: kDefaultPadding * 0.5),
+              child: Text(
+                activity.label,
+                style: Theme.of(context).textTheme.bodyLarge,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

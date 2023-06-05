@@ -65,6 +65,7 @@ class ActivitiesRepository {
     String? iconPackage,
   }) async {
     assert(iconId != null || iconCodepoint != null);
+    assert(iconId == null || iconCodepoint == null);
 
     final dio = await _dio;
 
@@ -86,5 +87,25 @@ class ActivitiesRepository {
     );
 
     return Activity.fromJson(response.data);
+  }
+
+  Future<void> deleteActivity({required String activityId}) async {
+    final dio = await _dio;
+
+    final Response response = await dio.delete("/${activityId}");
+
+    if (response.statusCode != 200) {
+      throw Exception("Could not delete activity");
+    }
+  }
+
+  Future<void> restoreActivity({required String activityId}) async {
+    final dio = await _dio;
+
+    final Response response = await dio.patch("/${activityId}");
+
+    if (response.statusCode != 200) {
+      throw Exception("Could not restore activity");
+    }
   }
 }

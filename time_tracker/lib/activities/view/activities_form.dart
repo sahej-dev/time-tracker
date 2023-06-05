@@ -44,12 +44,13 @@ class _ActivityFormState extends State<ActivityForm> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           "Create new activity",
           style: Theme.of(context).textTheme.headlineMedium,
         ),
-        const Padding(padding: EdgeInsets.only(top: kDefaultPadding)),
+        const Padding(padding: EdgeInsets.only(top: kDefaultPadding * 1.75)),
         TextField(
           controller: activityNameController,
           autofocus: true,
@@ -74,12 +75,14 @@ class _ActivityFormState extends State<ActivityForm> {
                 IconButton.filledTonal(
                   enableFeedback: true,
                   iconSize: kDefaultIconSize * 1.175,
-                  color: chosenColor,
+                  color: chosenColor.harmonizeWith(
+                    Theme.of(context).colorScheme.primary,
+                  ),
                   style: ButtonStyle(
                     backgroundColor: MaterialStatePropertyAll(
                       chosenColor
                           .harmonizeWith(
-                            Theme.of(context).colorScheme.secondaryContainer,
+                            Theme.of(context).colorScheme.primary,
                           )
                           .withAlpha(50),
                     ),
@@ -116,9 +119,7 @@ class _ActivityFormState extends State<ActivityForm> {
                     final Color? res = await showDialog(
                       context: context,
                       builder: (context) => ColorPickerDialog(
-                        allowCustom: true,
-                        initialColor: chosenColor,
-                      ),
+                          allowCustom: true, initialColor: chosenColor),
                     );
 
                     if (res != null) {
