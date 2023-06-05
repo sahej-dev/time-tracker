@@ -25,6 +25,7 @@ mixin _$IconMetadata {
   String? get fontFamily => throw _privateConstructorUsedError;
   @JsonKey(name: 'font_package')
   String? get fontPackage => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -41,7 +42,8 @@ abstract class $IconMetadataCopyWith<$Res> {
   $Res call(
       {String id,
       @JsonKey(name: 'font_family') String? fontFamily,
-      @JsonKey(name: 'font_package') String? fontPackage});
+      @JsonKey(name: 'font_package') String? fontPackage,
+      DateTime createdAt});
 }
 
 /// @nodoc
@@ -60,6 +62,7 @@ class _$IconMetadataCopyWithImpl<$Res, $Val extends IconMetadata>
     Object? id = null,
     Object? fontFamily = freezed,
     Object? fontPackage = freezed,
+    Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -74,6 +77,10 @@ class _$IconMetadataCopyWithImpl<$Res, $Val extends IconMetadata>
           ? _value.fontPackage
           : fontPackage // ignore: cast_nullable_to_non_nullable
               as String?,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
     ) as $Val);
   }
 }
@@ -89,7 +96,8 @@ abstract class _$$_IconMetadataCopyWith<$Res>
   $Res call(
       {String id,
       @JsonKey(name: 'font_family') String? fontFamily,
-      @JsonKey(name: 'font_package') String? fontPackage});
+      @JsonKey(name: 'font_package') String? fontPackage,
+      DateTime createdAt});
 }
 
 /// @nodoc
@@ -106,6 +114,7 @@ class __$$_IconMetadataCopyWithImpl<$Res>
     Object? id = null,
     Object? fontFamily = freezed,
     Object? fontPackage = freezed,
+    Object? createdAt = null,
   }) {
     return _then(_$_IconMetadata(
       id: null == id
@@ -120,6 +129,10 @@ class __$$_IconMetadataCopyWithImpl<$Res>
           ? _value.fontPackage
           : fontPackage // ignore: cast_nullable_to_non_nullable
               as String?,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
     ));
   }
 }
@@ -131,7 +144,8 @@ class _$_IconMetadata implements _IconMetadata {
   const _$_IconMetadata(
       {required this.id,
       @JsonKey(name: 'font_family') this.fontFamily,
-      @JsonKey(name: 'font_package') this.fontPackage});
+      @JsonKey(name: 'font_package') this.fontPackage,
+      required this.createdAt});
 
   factory _$_IconMetadata.fromJson(Map<String, dynamic> json) =>
       _$$_IconMetadataFromJson(json);
@@ -144,10 +158,12 @@ class _$_IconMetadata implements _IconMetadata {
   @override
   @JsonKey(name: 'font_package')
   final String? fontPackage;
+  @override
+  final DateTime createdAt;
 
   @override
   String toString() {
-    return 'IconMetadata(id: $id, fontFamily: $fontFamily, fontPackage: $fontPackage)';
+    return 'IconMetadata(id: $id, fontFamily: $fontFamily, fontPackage: $fontPackage, createdAt: $createdAt)';
   }
 
   @override
@@ -159,12 +175,15 @@ class _$_IconMetadata implements _IconMetadata {
             (identical(other.fontFamily, fontFamily) ||
                 other.fontFamily == fontFamily) &&
             (identical(other.fontPackage, fontPackage) ||
-                other.fontPackage == fontPackage));
+                other.fontPackage == fontPackage) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, fontFamily, fontPackage);
+  int get hashCode =>
+      Object.hash(runtimeType, id, fontFamily, fontPackage, createdAt);
 
   @JsonKey(ignore: true)
   @override
@@ -182,10 +201,10 @@ class _$_IconMetadata implements _IconMetadata {
 
 abstract class _IconMetadata implements IconMetadata {
   const factory _IconMetadata(
-          {required final String id,
-          @JsonKey(name: 'font_family') final String? fontFamily,
-          @JsonKey(name: 'font_package') final String? fontPackage}) =
-      _$_IconMetadata;
+      {required final String id,
+      @JsonKey(name: 'font_family') final String? fontFamily,
+      @JsonKey(name: 'font_package') final String? fontPackage,
+      required final DateTime createdAt}) = _$_IconMetadata;
 
   factory _IconMetadata.fromJson(Map<String, dynamic> json) =
       _$_IconMetadata.fromJson;
@@ -198,6 +217,8 @@ abstract class _IconMetadata implements IconMetadata {
   @override
   @JsonKey(name: 'font_package')
   String? get fontPackage;
+  @override
+  DateTime get createdAt;
   @override
   @JsonKey(ignore: true)
   _$$_IconMetadataCopyWith<_$_IconMetadata> get copyWith =>

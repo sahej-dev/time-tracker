@@ -24,6 +24,7 @@ mixin _$IconModel {
   int get codepoint => throw _privateConstructorUsedError;
   @JsonKey(name: 'metadata')
   IconMetadata get metadata => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -39,7 +40,8 @@ abstract class $IconModelCopyWith<$Res> {
   $Res call(
       {String id,
       int codepoint,
-      @JsonKey(name: 'metadata') IconMetadata metadata});
+      @JsonKey(name: 'metadata') IconMetadata metadata,
+      DateTime createdAt});
 
   $IconMetadataCopyWith<$Res> get metadata;
 }
@@ -60,6 +62,7 @@ class _$IconModelCopyWithImpl<$Res, $Val extends IconModel>
     Object? id = null,
     Object? codepoint = null,
     Object? metadata = null,
+    Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -74,6 +77,10 @@ class _$IconModelCopyWithImpl<$Res, $Val extends IconModel>
           ? _value.metadata
           : metadata // ignore: cast_nullable_to_non_nullable
               as IconMetadata,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
     ) as $Val);
   }
 
@@ -96,7 +103,8 @@ abstract class _$$_IconModelCopyWith<$Res> implements $IconModelCopyWith<$Res> {
   $Res call(
       {String id,
       int codepoint,
-      @JsonKey(name: 'metadata') IconMetadata metadata});
+      @JsonKey(name: 'metadata') IconMetadata metadata,
+      DateTime createdAt});
 
   @override
   $IconMetadataCopyWith<$Res> get metadata;
@@ -116,6 +124,7 @@ class __$$_IconModelCopyWithImpl<$Res>
     Object? id = null,
     Object? codepoint = null,
     Object? metadata = null,
+    Object? createdAt = null,
   }) {
     return _then(_$_IconModel(
       id: null == id
@@ -130,6 +139,10 @@ class __$$_IconModelCopyWithImpl<$Res>
           ? _value.metadata
           : metadata // ignore: cast_nullable_to_non_nullable
               as IconMetadata,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
     ));
   }
 }
@@ -141,7 +154,8 @@ class _$_IconModel implements _IconModel {
   const _$_IconModel(
       {required this.id,
       required this.codepoint,
-      @JsonKey(name: 'metadata') required this.metadata});
+      @JsonKey(name: 'metadata') required this.metadata,
+      required this.createdAt});
 
   factory _$_IconModel.fromJson(Map<String, dynamic> json) =>
       _$$_IconModelFromJson(json);
@@ -153,10 +167,12 @@ class _$_IconModel implements _IconModel {
   @override
   @JsonKey(name: 'metadata')
   final IconMetadata metadata;
+  @override
+  final DateTime createdAt;
 
   @override
   String toString() {
-    return 'IconModel(id: $id, codepoint: $codepoint, metadata: $metadata)';
+    return 'IconModel(id: $id, codepoint: $codepoint, metadata: $metadata, createdAt: $createdAt)';
   }
 
   @override
@@ -168,12 +184,15 @@ class _$_IconModel implements _IconModel {
             (identical(other.codepoint, codepoint) ||
                 other.codepoint == codepoint) &&
             (identical(other.metadata, metadata) ||
-                other.metadata == metadata));
+                other.metadata == metadata) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, codepoint, metadata);
+  int get hashCode =>
+      Object.hash(runtimeType, id, codepoint, metadata, createdAt);
 
   @JsonKey(ignore: true)
   @override
@@ -191,10 +210,10 @@ class _$_IconModel implements _IconModel {
 
 abstract class _IconModel implements IconModel {
   const factory _IconModel(
-          {required final String id,
-          required final int codepoint,
-          @JsonKey(name: 'metadata') required final IconMetadata metadata}) =
-      _$_IconModel;
+      {required final String id,
+      required final int codepoint,
+      @JsonKey(name: 'metadata') required final IconMetadata metadata,
+      required final DateTime createdAt}) = _$_IconModel;
 
   factory _IconModel.fromJson(Map<String, dynamic> json) =
       _$_IconModel.fromJson;
@@ -206,6 +225,8 @@ abstract class _IconModel implements IconModel {
   @override
   @JsonKey(name: 'metadata')
   IconMetadata get metadata;
+  @override
+  DateTime get createdAt;
   @override
   @JsonKey(ignore: true)
   _$$_IconModelCopyWith<_$_IconModel> get copyWith =>

@@ -20,9 +20,20 @@ router.get("/", async (req, res, next) => {
   ) {
     res.value = await Activity.findAll({
       where: { user_id: req.query.by_user },
+      include: {
+        model: Icon,
+        as: "icon",
+        include: { model: IconMetadata, as: "metadata" },
+      },
     });
   } else if (req.user.is_super_user) {
-    res.value = await Activity.findAll();
+    res.value = await Activity.findAll({
+      include: {
+        model: Icon,
+        as: "icon",
+        include: { model: IconMetadata, as: "metadata" },
+      },
+    });
   } else {
     return res.status(403).send("Forbidden");
   }

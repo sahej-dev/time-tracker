@@ -32,7 +32,10 @@ class ActivitiesRepository {
   ActivitiesRepository({required FlutterSecureStorage secureStorage})
       : _secureStorage = secureStorage;
 
-  Future<List<Activity>?> getActivities(String userId) async {
+  Future<List<Activity>?> getActivities({
+    required String userId,
+    bool force = false,
+  }) async {
     if (_activities != null) {
       return _activities;
     }

@@ -103,7 +103,7 @@ app.use(function parseResponseValue(req, res, next) {
 
   const resJson = JSON.parse(JSON.stringify(res.value));
   deleteAllNestedProperties(resJson, "deletedAt");
-  if (!res.includeCreatedAt) deleteAllNestedProperties(resJson, "createdAt");
+  // if (!res.includeCreatedAt) deleteAllNestedProperties(resJson, "createdAt");
   if (!res.includeUpdatedAt) deleteAllNestedProperties(resJson, "updatedAt");
   deleteAllNestedProperties(resJson, "password");
 

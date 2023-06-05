@@ -10,9 +10,38 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
       : _activitiesRepository = activitiesRepository,
         super(const ActivitiesState()) {
     on<ActivitiesNewAdded>(_onNewActivityAdded);
+    on<ActivitiesFetchRequested>(_onActivitesFetchRequested);
   }
 
   final ActivitiesRepository _activitiesRepository;
+
+  void _onActivitesFetchRequested(
+      ActivitiesFetchRequested event, Emitter<ActivitiesState> emit) async {
+    if (state.activities.isEmpty) {
+      emit(state.copyWith(loadingStatus: LoadingStatus.pending));
+    }
+
+    try {
+      final List<Activity>? activities =
+          await _activitiesRepository.getActivities(
+        userId: event.userId,
+        force: event.force,
+      );
+
+      if (activities != null) {
+        emit(state.copyWith(
+          activities: activities,
+          loadingStatus: LoadingStatus.success,
+        ));
+      } else {
+        throw Exception("unable to fetch activities");
+      }
+    } catch (e) {
+      print("activities fetch error::::");
+      print(e);
+      emit(state.copyWith(loadingStatus: LoadingStatus.error));
+    }
+  }
 
   void _onNewActivityAdded(
       ActivitiesNewAdded event, Emitter<ActivitiesState> emit) async {
@@ -42,14 +71,16 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
       }
 
       print(postedActivity);
-      if (postedActivity == null) throw Exception('Null posted exception');
+      if (postedActivity == null) {
+        throw Exception('Null postedActivity found exception');
+      }
 
       newActivities.removeLast();
       newActivities.add(postedActivity);
-      emit(ActivitiesState(activities: [...newActivities]));
+      emit(state.copyWith(activities: [...newActivities]));
     } catch (e) {
       print(e.toString());
-      emit(ActivitiesState(activities: revertActivities));
+      emit(state.copyWith(activities: revertActivities));
     }
   }
 }

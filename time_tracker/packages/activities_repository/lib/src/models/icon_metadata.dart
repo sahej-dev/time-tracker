@@ -10,6 +10,7 @@ class IconMetadata with _$IconMetadata {
     required String id,
     @JsonKey(name: 'font_family') String? fontFamily,
     @JsonKey(name: 'font_package') String? fontPackage,
+    required DateTime createdAt,
   }) = _IconMetadata;
 
   factory IconMetadata.fromJson(Map<String, dynamic> json) =>

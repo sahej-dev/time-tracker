@@ -12,6 +12,7 @@ class IconModel with _$IconModel {
     required String id,
     required int codepoint,
     @JsonKey(name: 'metadata') required IconMetadata metadata,
+    required DateTime createdAt,
   }) = _IconModel;
 
   @override

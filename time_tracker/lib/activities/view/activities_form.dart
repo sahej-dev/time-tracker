@@ -156,13 +156,16 @@ class _ActivityFormState extends State<ActivityForm> {
                         id: '',
                         label: activityNameController.text,
                         color: chosenColor.value,
+                        createdAt: DateTime.now(),
                         icon: IconModel(
                           id: '',
                           codepoint: chosenIcon.icon!.codePoint,
+                          createdAt: DateTime.now(),
                           metadata: IconMetadata(
                             id: '',
                             fontFamily: chosenIcon.icon?.fontFamily,
                             fontPackage: chosenIcon.icon?.fontPackage,
+                            createdAt: DateTime.now(),
                           ),
                         ),
                       ),

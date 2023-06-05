@@ -23,6 +23,7 @@ mixin _$Activity {
   String get id => throw _privateConstructorUsedError;
   String get label => throw _privateConstructorUsedError;
   IconModel get icon => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
   int? get color => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -36,7 +37,12 @@ abstract class $ActivityCopyWith<$Res> {
   factory $ActivityCopyWith(Activity value, $Res Function(Activity) then) =
       _$ActivityCopyWithImpl<$Res, Activity>;
   @useResult
-  $Res call({String id, String label, IconModel icon, int? color});
+  $Res call(
+      {String id,
+      String label,
+      IconModel icon,
+      DateTime createdAt,
+      int? color});
 
   $IconModelCopyWith<$Res> get icon;
 }
@@ -57,6 +63,7 @@ class _$ActivityCopyWithImpl<$Res, $Val extends Activity>
     Object? id = null,
     Object? label = null,
     Object? icon = null,
+    Object? createdAt = null,
     Object? color = freezed,
   }) {
     return _then(_value.copyWith(
@@ -72,6 +79,10 @@ class _$ActivityCopyWithImpl<$Res, $Val extends Activity>
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
               as IconModel,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
       color: freezed == color
           ? _value.color
           : color // ignore: cast_nullable_to_non_nullable
@@ -95,7 +106,12 @@ abstract class _$$_ActivityCopyWith<$Res> implements $ActivityCopyWith<$Res> {
       __$$_ActivityCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String label, IconModel icon, int? color});
+  $Res call(
+      {String id,
+      String label,
+      IconModel icon,
+      DateTime createdAt,
+      int? color});
 
   @override
   $IconModelCopyWith<$Res> get icon;
@@ -115,6 +131,7 @@ class __$$_ActivityCopyWithImpl<$Res>
     Object? id = null,
     Object? label = null,
     Object? icon = null,
+    Object? createdAt = null,
     Object? color = freezed,
   }) {
     return _then(_$_Activity(
@@ -130,6 +147,10 @@ class __$$_ActivityCopyWithImpl<$Res>
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
               as IconModel,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
       color: freezed == color
           ? _value.color
           : color // ignore: cast_nullable_to_non_nullable
@@ -143,7 +164,11 @@ class __$$_ActivityCopyWithImpl<$Res>
 @JsonSerializable(explicitToJson: true)
 class _$_Activity implements _Activity {
   const _$_Activity(
-      {required this.id, required this.label, required this.icon, this.color});
+      {required this.id,
+      required this.label,
+      required this.icon,
+      required this.createdAt,
+      this.color});
 
   factory _$_Activity.fromJson(Map<String, dynamic> json) =>
       _$$_ActivityFromJson(json);
@@ -155,11 +180,13 @@ class _$_Activity implements _Activity {
   @override
   final IconModel icon;
   @override
+  final DateTime createdAt;
+  @override
   final int? color;
 
   @override
   String toString() {
-    return 'Activity(id: $id, label: $label, icon: $icon, color: $color)';
+    return 'Activity(id: $id, label: $label, icon: $icon, createdAt: $createdAt, color: $color)';
   }
 
   @override
@@ -170,12 +197,15 @@ class _$_Activity implements _Activity {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.label, label) || other.label == label) &&
             (identical(other.icon, icon) || other.icon == icon) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
             (identical(other.color, color) || other.color == color));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, label, icon, color);
+  int get hashCode =>
+      Object.hash(runtimeType, id, label, icon, createdAt, color);
 
   @JsonKey(ignore: true)
   @override
@@ -196,6 +226,7 @@ abstract class _Activity implements Activity {
       {required final String id,
       required final String label,
       required final IconModel icon,
+      required final DateTime createdAt,
       final int? color}) = _$_Activity;
 
   factory _Activity.fromJson(Map<String, dynamic> json) = _$_Activity.fromJson;
@@ -206,6 +237,8 @@ abstract class _Activity implements Activity {
   String get label;
   @override
   IconModel get icon;
+  @override
+  DateTime get createdAt;
   @override
   int? get color;
   @override

@@ -12,6 +12,7 @@ class Activity with _$Activity {
     required String id,
     required String label,
     required IconModel icon,
+    required DateTime createdAt,
     int? color,
   }) = _Activity;
 
