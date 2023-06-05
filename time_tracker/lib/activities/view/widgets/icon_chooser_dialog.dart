@@ -67,46 +67,28 @@ class _IconChooserDialogState extends State<IconChooserDialog> {
             ),
             const Padding(padding: EdgeInsets.only(top: kDefaultPadding)),
             Expanded(
-              child: ListView.builder(
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: widget.iconsPerRow,
+                ),
+                itemCount: filteredKeys?.length ?? allKeys.length,
                 itemBuilder: (context, index) {
-                  final List<String> keys = filteredKeys ?? allKeys;
-                  List<int> indices = [];
-                  int i = index * widget.iconsPerRow;
-                  int j = i + widget.iconsPerRow;
+                  final keys = filteredKeys ?? allKeys;
 
-                  while (i < j && i < keys.length) {
-                    indices.add(i);
-                    i++;
-                  }
+                  IconData iconData = IconData(
+                    iconMap[keys[index]]!,
+                    fontFamily: "Material Design Icons",
+                    fontPackage: "material_design_icons_flutter",
+                  );
 
-                  List<IconButton> icons = [];
-
-                  for (int keyIndex in indices) {
-                    IconData iconData = IconData(
-                      iconMap[keys[keyIndex]]!,
-                      fontFamily: "Material Design Icons",
-                      fontPackage: "material_design_icons_flutter",
-                    );
-
-                    icons.add(
-                      IconButton(
-                        onPressed: () {
-                          Navigator.pop(context, iconData);
-                        },
-                        iconSize: kDefaultIconSize * 1.25,
-                        icon: Icon(iconData),
-                      ),
-                    );
-                  }
-
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: icons,
+                  return IconButton(
+                    onPressed: () {
+                      Navigator.pop(context, iconData);
+                    },
+                    iconSize: kDefaultIconSize * 1.25,
+                    icon: Icon(iconData),
                   );
                 },
-                itemCount: (filteredKeys?.length ?? allKeys.length) ~/
-                        widget.iconsPerRow +
-                    1,
               ),
             ),
             Row(
