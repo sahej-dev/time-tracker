@@ -5,8 +5,8 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:user_repository/user_repository.dart';
-
 import 'package:authentication_repository/authentication_repository.dart';
 
 import 'authentication/authentication.dart';
@@ -106,34 +106,37 @@ class _AppViewState extends State<AppView> {
     const TextTheme Function([TextTheme?]) textThemeGenerator =
         GoogleFonts.montserratTextTheme;
 
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: _buildTheme(Brightness.light, textThemeGenerator),
-      darkTheme: _buildTheme(Brightness.dark, textThemeGenerator),
-      themeMode: ThemeMode.system,
-      navigatorKey: _navigatorKey,
-      builder: (context, child) {
-        return BlocListener<AuthenticationBloc, AuthenticationState>(
-          listener: (context, state) {
-            switch (state.status) {
-              case AuthenticationStatus.authenticated:
-                _navigator.pushAndRemoveUntil<void>(
-                  ActivitiesPage.route(),
-                  (route) => false,
-                );
-              case AuthenticationStatus.unauthenticated:
-                _navigator.pushAndRemoveUntil<void>(
-                  LoginPage.route(),
-                  (route) => false,
-                );
-              case AuthenticationStatus.unknown:
-                break;
-            }
-          },
-          child: child,
+    return BlocSelector<AuthenticationBloc, AuthenticationState,
+        AuthenticationStatus>(
+      selector: (state) {
+        return state.status;
+      },
+      builder: (context, authStatus) {
+        return MaterialApp.router(
+          routerConfig: GoRouter(
+            initialLocation: '/',
+            routes: [
+              GoRoute(
+                path: '/',
+                builder: (context, state) {
+                  switch (authStatus) {
+                    case AuthenticationStatus.authenticated:
+                      return const ActivitiesPage();
+                    case AuthenticationStatus.unauthenticated:
+                      return const LoginPage();
+                    case AuthenticationStatus.unknown:
+                      return const SplashPage();
+                  }
+                },
+              ),
+            ],
+          ),
+          title: 'Flutter Demo',
+          theme: _buildTheme(Brightness.light, textThemeGenerator),
+          darkTheme: _buildTheme(Brightness.dark, textThemeGenerator),
+          themeMode: ThemeMode.system,
         );
       },
-      onGenerateRoute: (_) => SplashPage.route(),
     );
   }
 }
