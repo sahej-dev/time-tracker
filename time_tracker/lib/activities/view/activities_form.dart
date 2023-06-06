@@ -12,11 +12,13 @@ class ActivityForm extends StatefulWidget {
   const ActivityForm({
     super.key,
     this.defaultColor = Colors.green,
+    this.id,
     required ActivitiesBloc activitiesBloc,
   }) : _activitiesBloc = activitiesBloc;
 
   final ActivitiesBloc _activitiesBloc;
   final Color defaultColor;
+  final String? id;
   @override
   State<ActivityForm> createState() => _ActivityFormState();
 }
@@ -24,7 +26,7 @@ class ActivityForm extends StatefulWidget {
 class _ActivityFormState extends State<ActivityForm> {
   late Icon chosenIcon;
   late Color chosenColor;
-  TextEditingController activityNameController = TextEditingController();
+  late TextEditingController activityNameController;
 
   Icon getDefaultIcon() {
     return const Icon(MdiIcons.pencil);
@@ -37,8 +39,28 @@ class _ActivityFormState extends State<ActivityForm> {
   @override
   void initState() {
     super.initState();
-    chosenIcon = getDefaultIcon();
-    chosenColor = getDefaultColor();
+
+    int activityIdx = widget._activitiesBloc.state.activities
+        .indexWhere((activity) => activity.id == widget.id);
+
+    if (activityIdx == -1) {
+      // show page for creating an activity
+      activityNameController = TextEditingController();
+      chosenIcon = getDefaultIcon();
+      chosenColor = getDefaultColor();
+    } else {
+      // show page for editing existing activity
+      Activity activity = widget._activitiesBloc.state.activities[activityIdx];
+
+      activityNameController = TextEditingController(text: activity.label);
+      chosenIcon = Icon(IconData(
+        activity.icon.codepoint,
+        fontFamily: activity.icon.metadata.fontFamily,
+        fontPackage: activity.icon.metadata.fontPackage,
+      ));
+      chosenColor =
+          activity.color != null ? Color(activity.color!) : getDefaultColor();
+    }
   }
 
   @override
@@ -151,27 +173,51 @@ class _ActivityFormState extends State<ActivityForm> {
             const Padding(padding: EdgeInsets.only(left: kDefaultPadding)),
             FilledButton(
                 onPressed: () {
-                  widget._activitiesBloc.add(
-                    ActivitiesNewAdded(
-                      activity: Activity(
-                        id: '',
-                        label: activityNameController.text,
-                        color: chosenColor.value,
-                        createdAt: DateTime.now(),
-                        icon: IconModel(
+                  if (widget.id == null) {
+                    widget._activitiesBloc.add(
+                      ActivitiesNewAdded(
+                        activity: Activity(
                           id: '',
-                          codepoint: chosenIcon.icon!.codePoint,
+                          label: activityNameController.text,
+                          color: chosenColor.value,
                           createdAt: DateTime.now(),
-                          metadata: IconMetadata(
+                          icon: IconModel(
                             id: '',
-                            fontFamily: chosenIcon.icon?.fontFamily,
-                            fontPackage: chosenIcon.icon?.fontPackage,
+                            codepoint: chosenIcon.icon!.codePoint,
                             createdAt: DateTime.now(),
+                            metadata: IconMetadata(
+                              id: '',
+                              fontFamily: chosenIcon.icon?.fontFamily,
+                              fontPackage: chosenIcon.icon?.fontPackage,
+                              createdAt: DateTime.now(),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
+                    );
+                  } else {
+                    widget._activitiesBloc.add(
+                      ActivitiesEdited(
+                        activity: Activity(
+                          id: widget.id!,
+                          label: activityNameController.text,
+                          color: chosenColor.value,
+                          createdAt: DateTime.now(),
+                          icon: IconModel(
+                            id: '',
+                            codepoint: chosenIcon.icon!.codePoint,
+                            createdAt: DateTime.now(),
+                            metadata: IconMetadata(
+                              id: '',
+                              fontFamily: chosenIcon.icon?.fontFamily,
+                              fontPackage: chosenIcon.icon?.fontPackage,
+                              createdAt: DateTime.now(),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
 
                   Navigator.of(context).pop();
                 },

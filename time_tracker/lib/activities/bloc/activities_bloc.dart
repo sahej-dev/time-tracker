@@ -9,8 +9,9 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
   ActivitiesBloc({required ActivitiesRepository activitiesRepository})
       : _activitiesRepository = activitiesRepository,
         super(const ActivitiesState.initial()) {
-    on<ActivitiesNewAdded>(_onNewActivityAdded);
     on<ActivitiesFetchRequested>(_onActivitesFetchRequested);
+    on<ActivitiesNewAdded>(_onNewActivityAdded);
+    on<ActivitiesEdited>(_onActivityEdited);
     on<ActivitiesDeleted>(_onActivityDeleteRequested);
     on<ActivitiesTryUndoLastDeleted>(_onLastDeletedUndoRequested);
   }
@@ -86,14 +87,43 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
     }
   }
 
+  void _onActivityEdited(
+      ActivitiesEdited event, Emitter<ActivitiesState> emit) async {
+    final List<Activity> revertActivites = [...state.activities];
+
+    final List<Activity> newActivities = [...state.activities];
+
+    final int changedActivityIdx = newActivities
+        .indexWhere((activity) => activity.id == event.activity.id);
+
+    if (changedActivityIdx == -1) return;
+
+    // optimistically updating with edited activity
+    newActivities.removeAt(changedActivityIdx);
+    newActivities.insert(changedActivityIdx, event.activity);
+    emit(state.copyWith(activities: newActivities));
+
+    try {
+      await _activitiesRepository.editActivity(activity: event.activity);
+    } catch (e) {
+      print("error editing activity");
+      print(e);
+
+      emit(state.copyWith(activities: revertActivites));
+    }
+  }
+
   void _onActivityDeleteRequested(
       ActivitiesDeleted event, Emitter<ActivitiesState> emit) async {
     final List<Activity> revertActivities = [...state.activities];
 
     List<Activity> newActivities = [...state.activities];
     newActivities.remove(event.activity);
-    emit(
-        state.copyWith(activities: newActivities, lastDeleted: event.activity));
+
+    emit(state.copyWith(
+      activities: newActivities,
+      lastDeleted: event.activity,
+    ));
 
     try {
       await _activitiesRepository.deleteActivity(activityId: event.activity.id);
@@ -101,7 +131,7 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
       print("error in deleting activity");
       print(e);
 
-      emit(state.copyWith(activities: revertActivities));
+      emit(state.copyWith(activities: revertActivities, lastDeleted: null));
     }
   }
 

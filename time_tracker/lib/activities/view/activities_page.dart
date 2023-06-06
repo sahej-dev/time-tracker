@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:activities_repository/activities_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,6 +56,13 @@ class _ActivitiesPageView extends StatelessWidget {
                     return GridTile(
                       child: ActivityGridTile(
                         activity: activity,
+                        onTap: () {
+                          log(activity.id);
+                          _showActivityAddEditBottomSheet(
+                              context: context,
+                              bloc: context.read<ActivitiesBloc>(),
+                              activityId: activity.id);
+                        },
                         onLongPress: () {
                           final ActivitiesBloc bloc =
                               context.read<ActivitiesBloc>();
@@ -134,26 +143,34 @@ class _AddActivityFloatingActionButton extends StatelessWidget {
     final bloc = context.read<ActivitiesBloc>();
     return FloatingActionButton(
       onPressed: () {
-        showModalBottomSheet(
-          context: context,
-          showDragHandle: true,
-          isScrollControlled: true,
-          useSafeArea: true,
-          builder: (context) {
-            return Container(
-              width: double.maxFinite,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: kDefaultPadding * 2),
-              // color: Colors.red,
-              child: ActivityForm(
-                defaultColor: Theme.of(context).colorScheme.secondary,
-                activitiesBloc: bloc,
-              ),
-            );
-          },
-        );
+        _showActivityAddEditBottomSheet(context: context, bloc: bloc);
       },
       child: const Icon(Icons.add),
     );
   }
+}
+
+Future<T?> _showActivityAddEditBottomSheet<T>({
+  required BuildContext context,
+  required ActivitiesBloc bloc,
+  String? activityId,
+}) async {
+  return showModalBottomSheet(
+    context: context,
+    showDragHandle: true,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (context) {
+      return Container(
+        width: double.maxFinite,
+        padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding * 2),
+        // color: Colors.red,
+        child: ActivityForm(
+          defaultColor: Theme.of(context).colorScheme.secondary,
+          activitiesBloc: bloc,
+          id: activityId,
+        ),
+      );
+    },
+  );
 }

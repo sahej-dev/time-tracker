@@ -233,13 +233,25 @@ router.delete("/:id/instances/:instanceId", async (req, res, next) => {
 });
 
 router.put("/:id", async (req, res, next) => {
-  const activity = await Activity.findByPk(req.params.id);
+  const activity = await Activity.findByPk(req.params.id, {
+    include: {
+      model: Icon,
+      as: "icon",
+      include: { model: IconMetadata, as: "metadata" },
+    },
+  });
   if (!activity) return res.status(400).end("invalid id provided");
   if (!isActivityOwnerOrSuperuser(req, activity))
     return res.status(403).end("Forbidden");
 
-  const { label, color, icon_id, icon_codepoint, icon_family, icon_package } =
-    req.body;
+  const {
+    label,
+    color,
+    icon_id,
+    icon_codepoint,
+    icon_family = null,
+    icon_package = null,
+  } = req.body;
 
   if (icon_id) {
     const icon = await Icon.findByPk(icon_id);

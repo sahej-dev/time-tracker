@@ -89,6 +89,28 @@ class ActivitiesRepository {
     return Activity.fromJson(response.data);
   }
 
+  Future<Activity?> editActivity({required Activity activity}) async {
+    final dio = await _dio;
+
+    final Response response = await dio.put(
+      "/${activity.id}",
+      data: {
+        "label": activity.label,
+        "color": activity.color,
+        "icon_codepoint": activity.icon.codepoint,
+        "icon_family": activity.icon.metadata.fontFamily,
+        "icon_package": activity.icon.metadata.fontPackage,
+      },
+      options: Options(
+        headers: {
+          "Content-Type": "application/json",
+        },
+      ),
+    );
+
+    return Activity.fromJson(response.data);
+  }
+
   Future<void> deleteActivity({required String activityId}) async {
     final dio = await _dio;
 

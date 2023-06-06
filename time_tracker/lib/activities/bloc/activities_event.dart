@@ -22,6 +22,15 @@ class ActivitiesNewAdded extends ActivitiesEvent {
   List<Object?> get props => [activity];
 }
 
+class ActivitiesEdited extends ActivitiesEvent {
+  final Activity activity;
+
+  const ActivitiesEdited({required this.activity});
+
+  @override
+  List<Object?> get props => [activity];
+}
+
 class ActivitiesDeleted extends ActivitiesEvent {
   final Activity activity;
 
