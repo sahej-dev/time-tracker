@@ -36,7 +36,7 @@ class ActivitiesRepository {
     required String userId,
     bool force = false,
   }) async {
-    if (_activities != null) {
+    if (_activities != null && !force) {
       return _activities;
     }
 
@@ -86,7 +86,10 @@ class ActivitiesRepository {
       ),
     );
 
-    return Activity.fromJson(response.data);
+    final Activity activity = Activity.fromJson(response.data);
+    _activities?.add(activity);
+
+    return activity;
   }
 
   Future<Activity?> editActivity({required Activity activity}) async {
@@ -108,7 +111,17 @@ class ActivitiesRepository {
       ),
     );
 
-    return Activity.fromJson(response.data);
+    final Activity editedActivity = Activity.fromJson(response.data);
+
+    if (_activities != null) {
+      int idx = _activities!
+          .indexWhere((activity) => activity.id == editedActivity.id);
+
+      _activities!.removeAt(idx);
+      _activities!.insert(idx, editedActivity);
+    }
+
+    return editedActivity;
   }
 
   Future<void> deleteActivity({required String activityId}) async {
@@ -119,9 +132,11 @@ class ActivitiesRepository {
     if (response.statusCode != 200) {
       throw Exception("Could not delete activity");
     }
+
+    _activities?.removeWhere((activity) => activity.id == activityId);
   }
 
-  Future<void> restoreActivity({required String activityId}) async {
+  Future<Activity?> restoreActivity({required String activityId}) async {
     final dio = await _dio;
 
     final Response response = await dio.patch("/${activityId}");
@@ -129,5 +144,10 @@ class ActivitiesRepository {
     if (response.statusCode != 200) {
       throw Exception("Could not restore activity");
     }
+
+    final Activity restoredActivity = Activity.fromJson(response.data);
+    _activities?.add(restoredActivity);
+
+    return restoredActivity;
   }
 }

@@ -78,9 +78,9 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
         throw Exception('Null postedActivity found exception');
       }
 
-      newActivities.removeLast();
-      newActivities.add(postedActivity);
-      emit(state.copyWith(activities: [...newActivities]));
+      revertActivities.add(postedActivity);
+      print('emiting new state');
+      emit(state.copyWith(activities: [...revertActivities]));
     } catch (e) {
       print(e.toString());
       emit(state.copyWith(activities: revertActivities));

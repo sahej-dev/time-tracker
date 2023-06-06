@@ -332,6 +332,11 @@ router.patch("/:id", async (req, res, next) => {
   try {
     const activity = await Activity.findByPk(req.params.id, {
       paranoid: false,
+      include: {
+        model: Icon,
+        as: "icon",
+        include: { model: IconMetadata, as: "metadata" },
+      },
     });
     if (!activity) return res.status(401).end("invalid activity id");
 
@@ -341,7 +346,9 @@ router.patch("/:id", async (req, res, next) => {
     if (activity.isSoftDeleted()) {
       await activity.restore();
     }
-    res.status(200).end();
+
+    res.value = activity;
+    next();
   } catch (error) {
     next(error);
   }

@@ -19,6 +19,7 @@ class ActivitiesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log("build called");
     return BlocProvider<ActivitiesBloc>(
       create: (context) => ActivitiesBloc(
         activitiesRepository: context.read<ActivitiesRepository>(),
@@ -40,6 +41,8 @@ class _ActivitiesPageView extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(child: BlocBuilder<ActivitiesBloc, ActivitiesState>(
         builder: (context, state) {
+          print("page updating");
+          print(state.activities);
           switch (state.loadingStatus) {
             case LoadingStatus.initial:
             case LoadingStatus.pending:
@@ -74,11 +77,6 @@ class _ActivitiesPageView extends StatelessWidget {
                               return Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  ListTile(
-                                    title: const Text("Edit"),
-                                    leading: const Icon(Icons.edit),
-                                    onTap: () {},
-                                  ),
                                   ListTile(
                                     title: const Text("Delete"),
                                     leading: const Icon(Icons.delete),
