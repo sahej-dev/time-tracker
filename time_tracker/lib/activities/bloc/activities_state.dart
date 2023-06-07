@@ -34,5 +34,5 @@ class ActivitiesState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [activities, loadingStatus];
+  List<Object?> get props => [activities, loadingStatus, lastDeleted];
 }

@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'models/models.dart';
 
 class ActivitiesRepository {
-  List<Activity>? _activities;
+  final _activityStreamController =
+      BehaviorSubject<List<Activity>>.seeded(const []);
 
   Dio? __dio;
 
@@ -29,17 +31,14 @@ class ActivitiesRepository {
 
   FlutterSecureStorage _secureStorage;
 
-  ActivitiesRepository({required FlutterSecureStorage secureStorage})
-      : _secureStorage = secureStorage;
-
-  Future<List<Activity>?> getActivities({
+  ActivitiesRepository({
+    required FlutterSecureStorage secureStorage,
     required String userId,
-    bool force = false,
-  }) async {
-    if (_activities != null && !force) {
-      return _activities;
-    }
+  }) : _secureStorage = secureStorage {
+    _init(userId: userId);
+  }
 
+  void _init({required String userId}) async {
     final dio = await _dio;
 
     final Response response = await dio.get("/", queryParameters: {
@@ -47,37 +46,37 @@ class ActivitiesRepository {
     });
 
     final rawActivitiesList = response.data as List<dynamic>;
-    _activities = [];
+    final List<Activity> activities = [];
 
     for (int i = 0; i < rawActivitiesList.length; i++) {
-      _activities!.add(Activity.fromJson(rawActivitiesList[i]));
+      activities.add(Activity.fromJson(rawActivitiesList[i]));
     }
 
-    return _activities;
+    _activityStreamController.add(activities);
   }
 
-  Future<Activity?> postActivity({
-    required String label,
-    int? color,
-    String? iconId,
-    int? iconCodepoint,
-    String? iconFamily,
-    String? iconPackage,
-  }) async {
-    assert(iconId != null || iconCodepoint != null);
-    assert(iconId == null || iconCodepoint == null);
+  Stream<List<Activity>> getActivites() =>
+      _activityStreamController.asBroadcastStream();
+
+  Future<void> postActivity({required Activity activity}) async {
+    final List<Activity> activities = [..._activityStreamController.value];
+    final List<Activity> revertActivities = [
+      ..._activityStreamController.value
+    ];
+
+    activities.add(activity);
+    _activityStreamController.add(activities);
 
     final dio = await _dio;
 
     final Response response = await dio.post(
       "/",
       data: {
-        "label": label,
-        "color": color,
-        "icon_id": iconId,
-        "icon_codepoint": iconCodepoint,
-        "icon_family": iconFamily,
-        "icon_package": iconPackage,
+        "label": activity.label,
+        "color": activity.color,
+        "icon_codepoint": activity.icon.codepoint,
+        "icon_family": activity.icon.metadata.fontFamily,
+        "icon_package": activity.icon.metadata.fontPackage,
       },
       options: Options(
         headers: {
@@ -86,13 +85,27 @@ class ActivitiesRepository {
       ),
     );
 
-    final Activity activity = Activity.fromJson(response.data);
-    _activities?.add(activity);
-
-    return activity;
+    if (response.statusCode == 200) {
+      final Activity postedActivity = Activity.fromJson(response.data);
+      revertActivities.add(postedActivity);
+      _activityStreamController.add(revertActivities);
+    } else {
+      _activityStreamController.add(revertActivities);
+      throw Exception("error posting activity");
+    }
   }
 
-  Future<Activity?> editActivity({required Activity activity}) async {
+  Future<void> editActivity({required Activity activity}) async {
+    final List<Activity> activities = [..._activityStreamController.value];
+    final List<Activity> revertActivities = [
+      ..._activityStreamController.value
+    ];
+
+    int idx = activities.indexWhere((ele) => ele.id == activity.id);
+    if (idx < 0) return;
+    activities[idx] = activity;
+    _activityStreamController.add(activities);
+
     final dio = await _dio;
 
     final Response response = await dio.put(
@@ -111,43 +124,58 @@ class ActivitiesRepository {
       ),
     );
 
-    final Activity editedActivity = Activity.fromJson(response.data);
-
-    if (_activities != null) {
-      int idx = _activities!
-          .indexWhere((activity) => activity.id == editedActivity.id);
-
-      _activities!.removeAt(idx);
-      _activities!.insert(idx, editedActivity);
+    if (response.statusCode == 200) {
+      final Activity editedActivity = Activity.fromJson(response.data);
+      revertActivities[idx] = editedActivity;
+      _activityStreamController.add(revertActivities);
+    } else {
+      _activityStreamController.add(revertActivities);
+      throw Exception("error editing activity");
     }
-
-    return editedActivity;
   }
 
-  Future<void> deleteActivity({required String activityId}) async {
+  Future<void> deleteActivity({required Activity activity}) async {
+    final List<Activity> activities = [..._activityStreamController.value];
+    final List<Activity> revertActivities = [
+      ..._activityStreamController.value
+    ];
+
+    int idx = activities.indexWhere((ele) => ele.id == activity.id);
+    if (idx < 0) return;
+    activities.removeAt(idx);
+    _activityStreamController.add(activities);
+
     final dio = await _dio;
 
-    final Response response = await dio.delete("/${activityId}");
+    final Response response = await dio.delete("/${activity.id}");
 
     if (response.statusCode != 200) {
+      _activityStreamController.add(revertActivities);
       throw Exception("Could not delete activity");
     }
-
-    _activities?.removeWhere((activity) => activity.id == activityId);
   }
 
-  Future<Activity?> restoreActivity({required String activityId}) async {
+  Future<void> restoreActivity({required Activity activity}) async {
+    final List<Activity> activities = [..._activityStreamController.value];
+    final List<Activity> revertActivities = [
+      ..._activityStreamController.value
+    ];
+
+    activities.add(activity);
+    _activityStreamController.add(activities);
+
     final dio = await _dio;
 
-    final Response response = await dio.patch("/${activityId}");
+    final Response response = await dio.patch("/${activity.id}");
 
-    if (response.statusCode != 200) {
+    if (response.statusCode == 200) {
+      final Activity restoredActivity = Activity.fromJson(response.data);
+      revertActivities.add(restoredActivity);
+
+      _activityStreamController.add(revertActivities);
+    } else {
+      _activityStreamController.add(revertActivities);
       throw Exception("Could not restore activity");
     }
-
-    final Activity restoredActivity = Activity.fromJson(response.data);
-    _activities?.add(restoredActivity);
-
-    return restoredActivity;
   }
 }

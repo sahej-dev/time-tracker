@@ -8,7 +8,6 @@ import 'activities_form.dart';
 import '../bloc/activities_bloc.dart';
 import '../../constants/constants.dart';
 import '../../widgets/widgets.dart';
-import '../../authentication/bloc/authentication_bloc.dart';
 
 class ActivitiesPage extends StatelessWidget {
   const ActivitiesPage({super.key});
@@ -19,14 +18,10 @@ class ActivitiesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log("build called");
     return BlocProvider<ActivitiesBloc>(
       create: (context) => ActivitiesBloc(
         activitiesRepository: context.read<ActivitiesRepository>(),
-      )..add(
-          ActivitiesFetchRequested(
-              userId: context.read<AuthenticationBloc>().state.user!.id),
-        ),
+      )..add(const ActivitiesSubscriptionRequested()),
       child: const _ActivitiesPageView(),
     );
   }
@@ -41,8 +36,6 @@ class _ActivitiesPageView extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(child: BlocBuilder<ActivitiesBloc, ActivitiesState>(
         builder: (context, state) {
-          print("page updating");
-          print(state.activities);
           switch (state.loadingStatus) {
             case LoadingStatus.initial:
             case LoadingStatus.pending:

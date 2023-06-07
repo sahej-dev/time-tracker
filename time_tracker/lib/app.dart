@@ -1,4 +1,3 @@
-import 'package:activities_repository/activities_repository.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dynamic_color/dynamic_color.dart';
@@ -8,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:authentication_repository/authentication_repository.dart';
+import 'package:activities_repository/activities_repository.dart';
 
 import 'authentication/authentication.dart';
 import 'color_schemes.g.dart';
@@ -51,35 +51,30 @@ class _AppState extends State<App> {
         RepositoryProvider<UserRepository>.value(
           value: _userRepository,
         ),
-        RepositoryProvider(
-          create: (context) => ActivitiesRepository(
-            secureStorage: widget.secureStorage,
-          ),
-        )
       ],
       child: BlocProvider(
         create: (context) => AuthenticationBloc(
           authenticationRepository: _authenticationRepository,
           userRepository: _userRepository,
         ),
-        child: const AppView(),
+        child: AppView(
+          secureStorage: widget.secureStorage,
+        ),
       ),
     );
   }
 }
 
 class AppView extends StatefulWidget {
-  const AppView({super.key});
+  const AppView({super.key, required this.secureStorage});
+
+  final FlutterSecureStorage secureStorage;
 
   @override
   State<AppView> createState() => _AppViewState();
 }
 
 class _AppViewState extends State<AppView> {
-  final _navigatorKey = GlobalKey<NavigatorState>();
-
-  NavigatorState get _navigator => _navigatorKey.currentState!;
-
   ThemeData _buildTheme(
       Brightness brightness, Function gFontTextThemeGenerator) {
     late final ThemeData baseTheme;
@@ -121,7 +116,21 @@ class _AppViewState extends State<AppView> {
                 builder: (context, state) {
                   switch (authStatus) {
                     case AuthenticationStatus.authenticated:
-                      return const ActivitiesPage();
+                      return MultiRepositoryProvider(
+                        providers: [
+                          RepositoryProvider(
+                            create: (context) => ActivitiesRepository(
+                              secureStorage: widget.secureStorage,
+                              userId: context
+                                  .read<AuthenticationBloc>()
+                                  .state
+                                  .user!
+                                  .id,
+                            ),
+                          )
+                        ],
+                        child: const ActivitiesPage(),
+                      );
                     case AuthenticationStatus.unauthenticated:
                       return const LoginPage();
                     case AuthenticationStatus.unknown:

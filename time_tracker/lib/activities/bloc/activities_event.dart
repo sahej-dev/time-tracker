@@ -4,13 +4,11 @@ abstract class ActivitiesEvent extends Equatable {
   const ActivitiesEvent();
 }
 
-class ActivitiesFetchRequested extends ActivitiesEvent {
-  final String userId;
-  final bool force;
-  const ActivitiesFetchRequested({required this.userId, this.force = false});
+class ActivitiesSubscriptionRequested extends ActivitiesEvent {
+  const ActivitiesSubscriptionRequested();
 
   @override
-  List<Object?> get props => [force];
+  List<Object?> get props => [];
 }
 
 class ActivitiesNewAdded extends ActivitiesEvent {
