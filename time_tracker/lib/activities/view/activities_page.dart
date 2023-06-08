@@ -38,6 +38,9 @@ class _ActivitiesPageView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
+      appBar: AppBar(
+        title: const Text("Activities"),
+      ),
       body: SafeArea(child: BlocBuilder<ActivitiesBloc, ActivitiesState>(
         builder: (context, state) {
           switch (state.loadingStatus) {

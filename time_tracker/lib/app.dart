@@ -76,19 +76,22 @@ class AppView extends StatefulWidget {
 
 class _AppViewState extends State<AppView> {
   ThemeData _buildTheme(
-      Brightness brightness, Function gFontTextThemeGenerator) {
+    Brightness brightness,
+    Function gFontTextThemeGenerator,
+    ColorScheme colorScheme,
+  ) {
     late final ThemeData baseTheme;
     if (brightness == Brightness.light) {
       baseTheme = ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,
-        colorScheme: lightColorScheme.harmonized(),
+        colorScheme: colorScheme.harmonized(),
       );
     } else {
       baseTheme = ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
-        colorScheme: darkColorScheme.harmonized(),
+        colorScheme: colorScheme.harmonized(),
       );
     }
 
@@ -141,9 +144,17 @@ class _AppViewState extends State<AppView> {
             ],
           ),
           title: 'Flutter Demo',
-          theme: _buildTheme(Brightness.light, textThemeGenerator),
-          darkTheme: _buildTheme(Brightness.dark, textThemeGenerator),
-          themeMode: ThemeMode.system,
+          theme: _buildTheme(
+            Brightness.light,
+            textThemeGenerator,
+            lightColorScheme,
+          ),
+          darkTheme: _buildTheme(
+            Brightness.dark,
+            textThemeGenerator,
+            darkColorScheme,
+          ),
+          themeMode: ThemeMode.dark,
         );
       },
     );
