@@ -13,7 +13,9 @@ import 'authentication/authentication.dart';
 import 'color_schemes.g.dart';
 import 'activities/activities.dart';
 import 'login/login.dart';
+import 'logs/logs.dart';
 import 'splash/splash.dart';
+import 'app_shell.dart';
 
 class App extends StatefulWidget {
   const App({super.key, required this.secureStorage});
@@ -99,6 +101,80 @@ class _AppViewState extends State<AppView> {
         textTheme: gFontTextThemeGenerator(baseTheme.textTheme));
   }
 
+  GoRouter getRouterConfig(AuthenticationStatus authStatus) {
+    final GlobalKey<NavigatorState> rootNavigatorKey =
+        GlobalKey<NavigatorState>(debugLabel: 'root');
+
+    switch (authStatus) {
+      case AuthenticationStatus.unknown:
+        return GoRouter(
+          navigatorKey: rootNavigatorKey,
+          initialLocation: '/',
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (context, state) => const SplashPage(),
+            ),
+          ],
+        );
+      case AuthenticationStatus.unauthenticated:
+        return GoRouter(
+          navigatorKey: rootNavigatorKey,
+          initialLocation: '/',
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (context, state) => const LoginPage(),
+            ),
+          ],
+        );
+
+      case AuthenticationStatus.authenticated:
+        return GoRouter(
+          navigatorKey: rootNavigatorKey,
+          initialLocation: '/logs',
+          routes: [
+            StatefulShellRoute.indexedStack(
+              builder: (BuildContext context, GoRouterState state,
+                  StatefulNavigationShell navigationShell) {
+                return AppShell(
+                  navigationShell: navigationShell,
+                  appBarBuilders: [
+                    LogsPage.appBarBuilder(),
+                    ActivitiesPage.appBarBuilder(),
+                  ],
+                  floatingActionButtonBuilders: [
+                    LogsPage.fabBuilder(),
+                    ActivitiesPage.fabBuilder()
+                  ],
+                );
+              },
+              branches: [
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: '/logs',
+                      name: 'Logs',
+                      builder: (context, state) => const LogsPage(),
+                    ),
+                  ],
+                ),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: '/activities',
+                      name: 'Activities',
+                      builder: (context, state) => const ActivitiesPage(),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ],
+        );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     const TextTheme Function([TextTheme?]) textThemeGenerator =
@@ -109,40 +185,11 @@ class _AppViewState extends State<AppView> {
       selector: (state) {
         return state.status;
       },
+
+      /// provides repositories & blocs that depend on authentication status
       builder: (context, authStatus) {
-        return MaterialApp.router(
-          routerConfig: GoRouter(
-            initialLocation: '/',
-            routes: [
-              GoRoute(
-                path: '/',
-                builder: (context, state) {
-                  switch (authStatus) {
-                    case AuthenticationStatus.authenticated:
-                      return MultiRepositoryProvider(
-                        providers: [
-                          RepositoryProvider(
-                            create: (context) => ActivitiesRepository(
-                              secureStorage: widget.secureStorage,
-                              userId: context
-                                  .read<AuthenticationBloc>()
-                                  .state
-                                  .user!
-                                  .id,
-                            ),
-                          )
-                        ],
-                        child: const ActivitiesPage(),
-                      );
-                    case AuthenticationStatus.unauthenticated:
-                      return const LoginPage();
-                    case AuthenticationStatus.unknown:
-                      return const SplashPage();
-                  }
-                },
-              ),
-            ],
-          ),
+        final MaterialApp app = MaterialApp.router(
+          routerConfig: getRouterConfig(authStatus),
           title: 'Flutter Demo',
           theme: _buildTheme(
             Brightness.light,
@@ -155,6 +202,31 @@ class _AppViewState extends State<AppView> {
             darkColorScheme,
           ),
           themeMode: ThemeMode.dark,
+        );
+
+        if (authStatus != AuthenticationStatus.authenticated) return app;
+
+        return MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider(
+              create: (context) => ActivitiesRepository(
+                secureStorage: widget.secureStorage,
+                userId: context.read<AuthenticationBloc>().state.user!.id,
+              ),
+            ),
+          ],
+          child: Builder(builder: (context) {
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider<ActivitiesBloc>(
+                  create: (context) => ActivitiesBloc(
+                    activitiesRepository: context.read<ActivitiesRepository>(),
+                  )..add(const ActivitiesSubscriptionRequested()),
+                ),
+              ],
+              child: app,
+            );
+          }),
         );
       },
     );
