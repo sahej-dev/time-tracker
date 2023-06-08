@@ -25,6 +25,10 @@ class ActivitiesPage extends StatelessWidget {
       child: const _ActivitiesPageView(),
     );
   }
+
+  static Widget Function() fabBuilder() {
+    return () => const _AddActivityFloatingActionButton();
+  }
 }
 
 class _ActivitiesPageView extends StatelessWidget {
@@ -54,7 +58,7 @@ class _ActivitiesPageView extends StatelessWidget {
                         activity: activity,
                         onTap: () {
                           log(activity.id);
-                          _showActivityAddEditBottomSheet(
+                          ActivityForm.showAddEditBottomSheet(
                               context: context,
                               bloc: context.read<ActivitiesBloc>(),
                               activityId: activity.id);
@@ -121,7 +125,7 @@ class _ActivitiesPageView extends StatelessWidget {
           );
         },
       )),
-      floatingActionButton: const _AddActivityFloatingActionButton(),
+      floatingActionButton: ActivitiesPage.fabBuilder()(),
     );
   }
 }
@@ -134,34 +138,9 @@ class _AddActivityFloatingActionButton extends StatelessWidget {
     final bloc = context.read<ActivitiesBloc>();
     return FloatingActionButton(
       onPressed: () {
-        _showActivityAddEditBottomSheet(context: context, bloc: bloc);
+        ActivityForm.showAddEditBottomSheet(context: context, bloc: bloc);
       },
       child: const Icon(Icons.add),
     );
   }
-}
-
-Future<T?> _showActivityAddEditBottomSheet<T>({
-  required BuildContext context,
-  required ActivitiesBloc bloc,
-  String? activityId,
-}) async {
-  return showModalBottomSheet(
-    context: context,
-    showDragHandle: true,
-    isScrollControlled: true,
-    useSafeArea: true,
-    builder: (context) {
-      return Container(
-        width: double.maxFinite,
-        padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding * 2),
-        // color: Colors.red,
-        child: ActivityForm(
-          defaultColor: Theme.of(context).colorScheme.secondary,
-          activitiesBloc: bloc,
-          id: activityId,
-        ),
-      );
-    },
-  );
 }

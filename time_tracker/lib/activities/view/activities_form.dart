@@ -21,6 +21,30 @@ class ActivityForm extends StatefulWidget {
   final String? id;
   @override
   State<ActivityForm> createState() => _ActivityFormState();
+
+  static Future<T?> showAddEditBottomSheet<T>({
+    required BuildContext context,
+    required ActivitiesBloc bloc,
+    String? activityId,
+  }) async {
+    return showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) {
+        return Container(
+          width: double.maxFinite,
+          padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding * 2),
+          child: ActivityForm(
+            defaultColor: Theme.of(context).colorScheme.primary,
+            activitiesBloc: bloc,
+            id: activityId,
+          ),
+        );
+      },
+    );
+  }
 }
 
 class _ActivityFormState extends State<ActivityForm> {
