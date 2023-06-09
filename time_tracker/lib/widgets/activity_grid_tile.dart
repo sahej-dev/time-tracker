@@ -22,38 +22,41 @@ class ActivityGridTile extends StatelessWidget {
       activity.color ?? Theme.of(context).colorScheme.surfaceTint.value,
     ).harmonizeWith(Theme.of(context).colorScheme.primary);
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      elevation: 12,
-      shadowColor: Colors.transparent,
-      surfaceTintColor: color,
-      child: InkWell(
-        onTap: onTap,
-        onLongPress: onLongPress,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Icon(
-              IconData(
-                activity.icon.codepoint,
-                fontFamily: activity.icon.metadata.fontFamily,
-                fontPackage: activity.icon.metadata.fontPackage,
+    return GridTile(
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        elevation: 12,
+        shadowColor: Colors.transparent,
+        surfaceTintColor: color,
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Icon(
+                IconData(
+                  activity.icon.codepoint,
+                  fontFamily: activity.icon.metadata.fontFamily,
+                  fontPackage: activity.icon.metadata.fontPackage,
+                ),
+                color: color,
+                size: kDefaultIconSize * 1.5,
               ),
-              color: color,
-              size: kDefaultIconSize * 1.5,
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: kDefaultPadding * 0.5),
-              child: Text(
-                activity.label,
-                style: Theme.of(context).textTheme.bodyLarge,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: kDefaultPadding * 0.5),
+                child: Text(
+                  activity.label,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

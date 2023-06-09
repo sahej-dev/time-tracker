@@ -29,12 +29,10 @@ class LogsPage extends StatelessWidget {
                   itemCount: state.activities.length,
                   itemBuilder: (context, index) {
                     final activity = state.activities[index];
-                    return GridTile(
-                      child: ActivityGridTile(
-                        activity: activity,
-                        onTap: () {},
-                        onLongPress: () {},
-                      ),
+                    return ActivityGridTile(
+                      activity: activity,
+                      onTap: () {},
+                      onLongPress: () {},
                     );
                   },
                   gridDelegate: kDefaultGridDelegate),
