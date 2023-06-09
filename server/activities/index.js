@@ -8,7 +8,7 @@ const {
   ActivityInstance,
 } = require("../models");
 const { allowOnlySuperuser } = require("../middleware");
-const { isActivityOwnerOrSuperuser } = require("./utilities");
+const { isActivityOwnerOrSuperuser } = require("../utilities");
 
 const router = express.Router();
 
@@ -201,13 +201,12 @@ router.put("/:id/instances/:instanceId", async (req, res, next) => {
   if (!isActivityOwnerOrSuperuser(req, activityInstance.activity))
     return res.status(403).end("Forbidden");
 
-  const { start_at, end_at, comment, activity_id } = req.body;
+  const { start_at, end_at, comment } = req.body;
 
   res.value = await activityInstance.update({
     start_at,
     end_at,
     comment,
-    activity_id,
   });
   next();
 });

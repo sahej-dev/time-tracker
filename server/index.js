@@ -17,6 +17,7 @@ const {
 const { authRouter } = require("./auth");
 const { userRouter } = require("./users");
 const { activityRouter } = require("./activities");
+const { instancesRouter } = require("./instances");
 
 const app = express();
 const port = process.env.PORT || 2000;
@@ -75,6 +76,7 @@ app.use(authenticateToken);
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/activities", activityRouter);
+app.use("/api/v1/instances", instancesRouter);
 
 app.use((err, req, res, next) => {
   fs.appendFile(
