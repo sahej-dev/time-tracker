@@ -6,3 +6,8 @@ node_modules
 *.secret
 *.secrets
 config.js
+
+# auto-generated mac files
+time_tracker/macos/Flutter/GeneratedPluginRegistrant.swift
+time_tracker/macos/Flutter/ephemeral/Flutter-Generated.xcconfig
+time_tracker/macos/Flutter/ephemeral/flutter_export_environment.sh

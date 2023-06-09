@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,7 +20,7 @@ class ActivitiesPage extends StatelessWidget {
 
   static PreferredSizeWidget Function() appBarBuilder() {
     return () => AppBar(
-          title: const Text("Activities"),
+          title: const Text("Manage Activities"),
         );
   }
 
@@ -54,7 +52,6 @@ class _ActivitiesPageView extends StatelessWidget {
                     child: ActivityGridTile(
                       activity: activity,
                       onTap: () {
-                        log(activity.id);
                         ActivityForm.showAddEditBottomSheet(
                             context: context,
                             bloc: context.read<ActivitiesBloc>(),
@@ -66,6 +63,7 @@ class _ActivitiesPageView extends StatelessWidget {
 
                         showModalBottomSheet(
                           clipBehavior: Clip.antiAlias,
+                          useRootNavigator: true,
                           context: context,
                           builder: (context) {
                             return Column(
@@ -106,11 +104,7 @@ class _ActivitiesPageView extends StatelessWidget {
                     ),
                   );
                 },
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: kDefaultPadding * 0.25,
-                  mainAxisSpacing: kDefaultPadding * 0.25,
-                ),
+                gridDelegate: kDefaultGridDelegate,
               ),
             );
           default:

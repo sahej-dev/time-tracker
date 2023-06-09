@@ -31,6 +31,7 @@ class ActivityForm extends StatefulWidget {
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
+      useRootNavigator: true,
       useSafeArea: true,
       builder: (context) {
         return Container(
