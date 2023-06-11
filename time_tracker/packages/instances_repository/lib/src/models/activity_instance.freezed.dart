@@ -24,8 +24,8 @@ mixin _$ActivityInstance {
   @JsonKey(name: 'start_at')
   DateTime get startAt => throw _privateConstructorUsedError;
   @JsonKey(name: 'end_at')
-  DateTime get endAt => throw _privateConstructorUsedError;
-  String get comment => throw _privateConstructorUsedError;
+  DateTime? get endAt => throw _privateConstructorUsedError;
+  String? get comment => throw _privateConstructorUsedError;
   @JsonKey(name: 'activity_id')
   String get activityId => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -45,8 +45,8 @@ abstract class $ActivityInstanceCopyWith<$Res> {
   $Res call(
       {String id,
       @JsonKey(name: 'start_at') DateTime startAt,
-      @JsonKey(name: 'end_at') DateTime endAt,
-      String comment,
+      @JsonKey(name: 'end_at') DateTime? endAt,
+      String? comment,
       @JsonKey(name: 'activity_id') String activityId,
       DateTime createdAt});
 }
@@ -66,8 +66,8 @@ class _$ActivityInstanceCopyWithImpl<$Res, $Val extends ActivityInstance>
   $Res call({
     Object? id = null,
     Object? startAt = null,
-    Object? endAt = null,
-    Object? comment = null,
+    Object? endAt = freezed,
+    Object? comment = freezed,
     Object? activityId = null,
     Object? createdAt = null,
   }) {
@@ -80,14 +80,14 @@ class _$ActivityInstanceCopyWithImpl<$Res, $Val extends ActivityInstance>
           ? _value.startAt
           : startAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      endAt: null == endAt
+      endAt: freezed == endAt
           ? _value.endAt
           : endAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      comment: null == comment
+              as DateTime?,
+      comment: freezed == comment
           ? _value.comment
           : comment // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       activityId: null == activityId
           ? _value.activityId
           : activityId // ignore: cast_nullable_to_non_nullable
@@ -111,8 +111,8 @@ abstract class _$$_ActivityInstanceCopyWith<$Res>
   $Res call(
       {String id,
       @JsonKey(name: 'start_at') DateTime startAt,
-      @JsonKey(name: 'end_at') DateTime endAt,
-      String comment,
+      @JsonKey(name: 'end_at') DateTime? endAt,
+      String? comment,
       @JsonKey(name: 'activity_id') String activityId,
       DateTime createdAt});
 }
@@ -130,8 +130,8 @@ class __$$_ActivityInstanceCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? startAt = null,
-    Object? endAt = null,
-    Object? comment = null,
+    Object? endAt = freezed,
+    Object? comment = freezed,
     Object? activityId = null,
     Object? createdAt = null,
   }) {
@@ -144,14 +144,14 @@ class __$$_ActivityInstanceCopyWithImpl<$Res>
           ? _value.startAt
           : startAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      endAt: null == endAt
+      endAt: freezed == endAt
           ? _value.endAt
           : endAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      comment: null == comment
+              as DateTime?,
+      comment: freezed == comment
           ? _value.comment
           : comment // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       activityId: null == activityId
           ? _value.activityId
           : activityId // ignore: cast_nullable_to_non_nullable
@@ -186,9 +186,9 @@ class _$_ActivityInstance implements _ActivityInstance {
   final DateTime startAt;
   @override
   @JsonKey(name: 'end_at')
-  final DateTime endAt;
+  final DateTime? endAt;
   @override
-  final String comment;
+  final String? comment;
   @override
   @JsonKey(name: 'activity_id')
   final String activityId;
@@ -238,8 +238,8 @@ abstract class _ActivityInstance implements ActivityInstance {
   const factory _ActivityInstance(
       {required final String id,
       @JsonKey(name: 'start_at') required final DateTime startAt,
-      @JsonKey(name: 'end_at') required final DateTime endAt,
-      required final String comment,
+      @JsonKey(name: 'end_at') required final DateTime? endAt,
+      required final String? comment,
       @JsonKey(name: 'activity_id') required final String activityId,
       required final DateTime createdAt}) = _$_ActivityInstance;
 
@@ -253,9 +253,9 @@ abstract class _ActivityInstance implements ActivityInstance {
   DateTime get startAt;
   @override
   @JsonKey(name: 'end_at')
-  DateTime get endAt;
+  DateTime? get endAt;
   @override
-  String get comment;
+  String? get comment;
   @override
   @JsonKey(name: 'activity_id')
   String get activityId;

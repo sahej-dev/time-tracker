@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../types.dart';
 import 'activities_form.dart';
 import '../bloc/activities_bloc.dart';
 import '../../constants/constants.dart';

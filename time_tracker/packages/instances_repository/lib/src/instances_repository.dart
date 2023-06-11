@@ -54,4 +54,75 @@ class InstancesRepository {
 
   Stream<List<ActivityInstance>> getInstances() =>
       _instancesStreamController.asBroadcastStream();
+
+  Future<void> createInstance({required ActivityInstance instance}) async {
+    final List<ActivityInstance> revertInstances = [
+      ..._instancesStreamController.value
+    ];
+    final List<ActivityInstance> newInstances = [
+      ..._instancesStreamController.value
+    ];
+
+    newInstances.add(instance);
+
+    final dio = await _dio;
+
+    final Response response = await dio.post(
+      "/activities/${instance.activityId}/instances",
+      data: instance.toJson(),
+      options: Options(
+        headers: {
+          "Content-Type": "application/json",
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final ActivityInstance createdInstance =
+          ActivityInstance.fromJson(response.data);
+
+      revertInstances.add(createdInstance);
+      _instancesStreamController.add(revertInstances);
+    } else {
+      _instancesStreamController.add(revertInstances);
+      throw Exception("error posting activity instance");
+    }
+  }
+
+  Future<void> editInstance({required ActivityInstance instance}) async {
+    final List<ActivityInstance> revertInstances = [
+      ..._instancesStreamController.value
+    ];
+    final List<ActivityInstance> instances = [
+      ..._instancesStreamController.value
+    ];
+
+    int idx = instances.indexWhere((ele) => ele.id == instance.id);
+    if (idx < 0) return;
+    instances[idx] = instance;
+    _instancesStreamController.add(instances);
+
+    final dio = await _dio;
+
+    final Response response = await dio.put(
+      "/activities/${instance.activityId}/instances/${instance.id}",
+      data: instance.toJson(),
+      options: Options(
+        headers: {
+          "Content-Type": "application/json",
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final ActivityInstance editedInstance =
+          ActivityInstance.fromJson(response.data);
+
+      revertInstances[idx] = editedInstance;
+      _instancesStreamController.add(revertInstances);
+    } else {
+      _instancesStreamController.add(revertInstances);
+      throw Exception("error editing activity instance");
+    }
+  }
 }

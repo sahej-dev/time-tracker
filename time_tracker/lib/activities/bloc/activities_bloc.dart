@@ -2,6 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:activities_repository/activities_repository.dart';
 
+import '../../types.dart';
+
 part 'activities_event.dart';
 part 'activities_state.dart';
 

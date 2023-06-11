@@ -9,8 +9,8 @@ class ActivityInstance with _$ActivityInstance {
   const factory ActivityInstance({
     required String id,
     @JsonKey(name: 'start_at') required DateTime startAt,
-    @JsonKey(name: 'end_at') required DateTime endAt,
-    required String comment,
+    @JsonKey(name: 'end_at') required DateTime? endAt,
+    required String? comment,
     @JsonKey(name: 'activity_id') required String activityId,
     required DateTime createdAt,
   }) = _ActivityInstance;

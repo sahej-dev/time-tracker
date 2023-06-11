@@ -2,8 +2,6 @@ part of 'activities_bloc.dart';
 
 enum ActivitiesSyncStatus { unsynced, synced, syncing }
 
-enum LoadingStatus { initial, pending, success, error }
-
 enum SortBy { createdAt, name }
 
 class ActivitiesState extends Equatable {

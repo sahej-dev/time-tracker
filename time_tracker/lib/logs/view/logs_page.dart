@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../activities/activities.dart';
 import '../../constants/constants.dart';
+import '../../types.dart';
 import '../../widgets/widgets.dart';
 
 class LogsPage extends StatelessWidget {
