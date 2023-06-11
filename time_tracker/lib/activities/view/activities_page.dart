@@ -42,6 +42,11 @@ class _ActivitiesPageView extends StatelessWidget {
           case LoadingStatus.pending:
             return const LoadingIndicator();
 
+          case LoadingStatus.error:
+            return ErrorDisplay(
+              error: state.exception,
+            );
+
           case LoadingStatus.success:
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
@@ -109,12 +114,11 @@ class _ActivitiesPageView extends StatelessWidget {
               ),
             );
           default:
+            return Text(
+              "Uknown loading state ${state.loadingStatus}. Please contact developers",
+              style: Theme.of(context).textTheme.bodyLarge,
+            );
         }
-
-        return Text(
-          "Uknown loading state ${state.loadingStatus}. Please contact developers",
-          style: Theme.of(context).textTheme.bodyLarge,
-        );
       },
     );
   }

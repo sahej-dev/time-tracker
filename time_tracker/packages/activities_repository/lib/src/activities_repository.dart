@@ -5,8 +5,7 @@ import 'package:rxdart/rxdart.dart';
 import 'models/models.dart';
 
 class ActivitiesRepository {
-  final _activityStreamController =
-      BehaviorSubject<List<Activity>>.seeded(const []);
+  final _activityStreamController = BehaviorSubject<List<Activity>>();
 
   Dio? __dio;
 
@@ -24,6 +23,9 @@ class ActivitiesRepository {
     __dio = Dio(BaseOptions(
       baseUrl: "http://10.0.2.2:2000/api/v1/activities",
       headers: {"authorization": "Bearer ${token}"},
+      sendTimeout: Duration(seconds: 5),
+      connectTimeout: Duration(seconds: 5),
+      receiveTimeout: Duration(seconds: 5),
     ));
 
     return __dio!;
@@ -40,19 +42,31 @@ class ActivitiesRepository {
 
   void _init({required String userId}) async {
     final dio = await _dio;
+    try {
+      final Response response = await dio.get("/", queryParameters: {
+        "by_user": userId,
+      });
 
-    final Response response = await dio.get("/", queryParameters: {
-      "by_user": userId,
-    });
+      final rawActivitiesList = response.data as List<dynamic>;
+      final List<Activity> activities = [];
 
-    final rawActivitiesList = response.data as List<dynamic>;
-    final List<Activity> activities = [];
+      for (int i = 0; i < rawActivitiesList.length; i++) {
+        activities.add(Activity.fromJson(rawActivitiesList[i]));
+      }
 
-    for (int i = 0; i < rawActivitiesList.length; i++) {
-      activities.add(Activity.fromJson(rawActivitiesList[i]));
+      _activityStreamController.add(activities);
+    } on DioError catch (error) {
+      if ([
+        DioErrorType.sendTimeout,
+        DioErrorType.receiveTimeout,
+        DioErrorType.connectionTimeout
+      ].contains(error.type)) {
+        _activityStreamController.addError(
+            "Unable to connect. Please check your network connection.");
+      } else {
+        _activityStreamController.addError(error);
+      }
     }
-
-    _activityStreamController.add(activities);
   }
 
   Stream<List<Activity>> getActivites() =>
@@ -69,29 +83,42 @@ class ActivitiesRepository {
 
     final dio = await _dio;
 
-    final Response response = await dio.post(
-      "/",
-      data: {
-        "label": activity.label,
-        "color": activity.color,
-        "icon_codepoint": activity.icon.codepoint,
-        "icon_family": activity.icon.metadata.fontFamily,
-        "icon_package": activity.icon.metadata.fontPackage,
-      },
-      options: Options(
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      final Response response = await dio.post(
+        "/",
+        data: {
+          "label": activity.label,
+          "color": activity.color,
+          "icon_codepoint": activity.icon.codepoint,
+          "icon_family": activity.icon.metadata.fontFamily,
+          "icon_package": activity.icon.metadata.fontPackage,
         },
-      ),
-    );
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+          },
+        ),
+      );
 
-    if (response.statusCode == 200) {
-      final Activity postedActivity = Activity.fromJson(response.data);
-      revertActivities.add(postedActivity);
-      _activityStreamController.add(revertActivities);
-    } else {
-      _activityStreamController.add(revertActivities);
-      throw Exception("error posting activity");
+      if (response.statusCode == 200) {
+        final Activity postedActivity = Activity.fromJson(response.data);
+        revertActivities.add(postedActivity);
+        _activityStreamController.add(revertActivities);
+      } else {
+        _activityStreamController.add(revertActivities);
+        throw Exception("error posting activity");
+      }
+    } on DioError catch (error) {
+      if ([
+        DioErrorType.sendTimeout,
+        DioErrorType.receiveTimeout,
+        DioErrorType.connectionTimeout
+      ].contains(error.type)) {
+        _activityStreamController.addError(
+            "Unable to connect. Please check your network connection.");
+      } else {
+        _activityStreamController.addError(error);
+      }
     }
   }
 
@@ -108,29 +135,42 @@ class ActivitiesRepository {
 
     final dio = await _dio;
 
-    final Response response = await dio.put(
-      "/${activity.id}",
-      data: {
-        "label": activity.label,
-        "color": activity.color,
-        "icon_codepoint": activity.icon.codepoint,
-        "icon_family": activity.icon.metadata.fontFamily,
-        "icon_package": activity.icon.metadata.fontPackage,
-      },
-      options: Options(
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      final Response response = await dio.put(
+        "/${activity.id}",
+        data: {
+          "label": activity.label,
+          "color": activity.color,
+          "icon_codepoint": activity.icon.codepoint,
+          "icon_family": activity.icon.metadata.fontFamily,
+          "icon_package": activity.icon.metadata.fontPackage,
         },
-      ),
-    );
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+          },
+        ),
+      );
 
-    if (response.statusCode == 200) {
-      final Activity editedActivity = Activity.fromJson(response.data);
-      revertActivities[idx] = editedActivity;
-      _activityStreamController.add(revertActivities);
-    } else {
-      _activityStreamController.add(revertActivities);
-      throw Exception("error editing activity");
+      if (response.statusCode == 200) {
+        final Activity editedActivity = Activity.fromJson(response.data);
+        revertActivities[idx] = editedActivity;
+        _activityStreamController.add(revertActivities);
+      } else {
+        _activityStreamController.add(revertActivities);
+        throw Exception("Could not edit activity");
+      }
+    } on DioError catch (error) {
+      if ([
+        DioErrorType.sendTimeout,
+        DioErrorType.receiveTimeout,
+        DioErrorType.connectionTimeout
+      ].contains(error.type)) {
+        _activityStreamController.addError(
+            "Unable to connect. Please check your network connection.");
+      } else {
+        _activityStreamController.addError(error);
+      }
     }
   }
 
@@ -147,11 +187,24 @@ class ActivitiesRepository {
 
     final dio = await _dio;
 
-    final Response response = await dio.delete("/${activity.id}");
+    try {
+      final Response response = await dio.delete("/${activity.id}");
 
-    if (response.statusCode != 200) {
-      _activityStreamController.add(revertActivities);
-      throw Exception("Could not delete activity");
+      if (response.statusCode != 200) {
+        _activityStreamController.add(revertActivities);
+        throw Exception("Could not delete activity");
+      }
+    } on DioError catch (error) {
+      if ([
+        DioErrorType.sendTimeout,
+        DioErrorType.receiveTimeout,
+        DioErrorType.connectionTimeout
+      ].contains(error.type)) {
+        _activityStreamController.addError(
+            "Unable to connect. Please check your network connection.");
+      } else {
+        _activityStreamController.addError(error);
+      }
     }
   }
 
@@ -166,16 +219,29 @@ class ActivitiesRepository {
 
     final dio = await _dio;
 
-    final Response response = await dio.patch("/${activity.id}");
+    try {
+      final Response response = await dio.patch("/${activity.id}");
 
-    if (response.statusCode == 200) {
-      final Activity restoredActivity = Activity.fromJson(response.data);
-      revertActivities.add(restoredActivity);
+      if (response.statusCode == 200) {
+        final Activity restoredActivity = Activity.fromJson(response.data);
+        revertActivities.add(restoredActivity);
 
-      _activityStreamController.add(revertActivities);
-    } else {
-      _activityStreamController.add(revertActivities);
-      throw Exception("Could not restore activity");
+        _activityStreamController.add(revertActivities);
+      } else {
+        _activityStreamController.add(revertActivities);
+        throw Exception("Could not restore activity");
+      }
+    } on DioError catch (error) {
+      if ([
+        DioErrorType.sendTimeout,
+        DioErrorType.receiveTimeout,
+        DioErrorType.connectionTimeout
+      ].contains(error.type)) {
+        _activityStreamController.addError(
+            "Unable to connect. Please check your network connection.");
+      } else {
+        _activityStreamController.addError(error);
+      }
     }
   }
 }

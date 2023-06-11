@@ -34,6 +34,12 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
           activities: activities,
         );
       },
+      onError: (error, stackTrace) {
+        return state.copyWith(
+          loadingStatus: LoadingStatus.error,
+          exception: Exception(error.toString()),
+        );
+      },
     );
   }
 

@@ -9,12 +9,14 @@ class ActivitiesState extends Equatable {
   final LoadingStatus loadingStatus;
   final Activity? lastDeleted;
   final List<Activity>? sortedActivities;
+  final Exception? exception;
 
   const ActivitiesState._({
     this.activities = const [],
     this.loadingStatus = LoadingStatus.initial,
     this.sortedActivities,
     this.lastDeleted,
+    this.exception,
   });
 
   const ActivitiesState.initial() : this._();
@@ -23,11 +25,15 @@ class ActivitiesState extends Equatable {
     List<Activity>? activities,
     LoadingStatus? loadingStatus,
     Activity? lastDeleted,
+    Exception? exception,
   }) {
     return ActivitiesState._(
       activities: activities ?? this.activities,
       loadingStatus: loadingStatus ?? this.loadingStatus,
       lastDeleted: lastDeleted ?? this.lastDeleted,
+      exception: (loadingStatus ?? this.loadingStatus) != LoadingStatus.error
+          ? null
+          : (exception ?? this.exception),
     );
   }
 

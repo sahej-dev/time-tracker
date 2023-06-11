@@ -6,7 +6,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 enum AuthenticationStatus { unknown, authenticated, unauthenticated }
 
 class AuthenticationRepository {
-  final _dio = Dio(BaseOptions(baseUrl: "http://10.0.2.2:2000/api/v1/auth"));
+  final _dio = Dio(BaseOptions(
+    baseUrl: "http://10.0.2.2:2000/api/v1/auth",
+    sendTimeout: Duration(seconds: 5),
+    connectTimeout: Duration(seconds: 5),
+    receiveTimeout: Duration(seconds: 5),
+  ));
 
   final _controller = StreamController<AuthenticationStatus>();
   final _secureStorage = FlutterSecureStorage(
