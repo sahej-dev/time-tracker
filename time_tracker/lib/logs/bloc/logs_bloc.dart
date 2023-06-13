@@ -15,6 +15,8 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
     on<LogsInstanceAdded>(_onInstanceAdded);
     on<LogsInstanceStopped>(_onInstanceStopped);
     on<LogsInstanceEdited>(_onInstanceEdit);
+    on<LogsInstanceDeleted>(_onInstanceDeleted);
+    on<LogsTryUndoLastDeleted>(_onLastDeletedUndoRequested);
   }
 
   final InstancesRepository _instancesRepository;
@@ -52,7 +54,7 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
       // closing last running instance (if any) at start time of current instance
 
       ActivityInstance instanceToBeEnded = state.instances[runningInstanceIdx];
-      _instancesRepository.editInstance(
+      await _instancesRepository.editInstance(
         instance: instanceToBeEnded.copyWith(endAt: event.instance.startAt),
       );
     }
@@ -77,5 +79,27 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
     Emitter<LogsState> emit,
   ) async {
     _instancesRepository.editInstance(instance: event.instance);
+  }
+
+  Future<void> _onInstanceDeleted(
+    LogsInstanceDeleted event,
+    Emitter<LogsState> emit,
+  ) async {
+    emit(state.copyWith(lastDeleted: event.instance));
+
+    _instancesRepository.deleteInstance(instance: event.instance);
+  }
+
+  Future<void> _onLastDeletedUndoRequested(
+    LogsTryUndoLastDeleted event,
+    Emitter<LogsState> emit,
+  ) async {
+    if (state.lastDeleted == null) return;
+    if (state.instances.contains(state.lastDeleted)) {
+      emit(state.copyWith(lastDeleted: null));
+      return;
+    }
+
+    _instancesRepository.restoreInstance(instance: state.lastDeleted!);
   }
 }

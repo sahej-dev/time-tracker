@@ -165,4 +165,84 @@ class InstancesRepository {
       }
     }
   }
+
+  Future<void> deleteInstance({required ActivityInstance instance}) async {
+    final List<ActivityInstance> revertInstances = [
+      ..._instancesStreamController.value
+    ];
+    final List<ActivityInstance> instances = [
+      ..._instancesStreamController.value
+    ];
+
+    int idx = instances.indexWhere((ele) => ele.id == instance.id);
+    if (idx < 0) return;
+    instances.removeAt(idx);
+    _instancesStreamController.add(instances);
+
+    final dio = await _dio;
+
+    try {
+      final Response response = await dio.delete(
+        "/instances/${instance.id}",
+      );
+
+      if (response.statusCode != 200) {
+        _instancesStreamController.add(revertInstances);
+        throw Exception("error deleting activity instance");
+      }
+    } on DioError catch (error) {
+      if ([
+        DioErrorType.sendTimeout,
+        DioErrorType.receiveTimeout,
+        DioErrorType.connectionTimeout
+      ].contains(error.type)) {
+        _instancesStreamController.addError(Exception(
+            "Unable to connect. Please check your network connection."));
+      } else {
+        _instancesStreamController.addError(error);
+      }
+    }
+  }
+
+  Future<void> restoreInstance({required ActivityInstance instance}) async {
+    final List<ActivityInstance> revertInstances = [
+      ..._instancesStreamController.value
+    ];
+    final List<ActivityInstance> instances = [
+      ..._instancesStreamController.value
+    ];
+
+    instances.add(instance);
+    _instancesStreamController.add(instances);
+
+    final dio = await _dio;
+
+    try {
+      final Response response = await dio.patch(
+        "/instances/${instance.id}",
+      );
+
+      if (response.statusCode == 200) {
+        final ActivityInstance restoredInstance =
+            ActivityInstance.fromJson(response.data);
+        revertInstances.add(restoredInstance);
+
+        _instancesStreamController.add(revertInstances);
+      } else {
+        _instancesStreamController.add(revertInstances);
+        throw Exception("error restoring activity instance");
+      }
+    } on DioError catch (error) {
+      if ([
+        DioErrorType.sendTimeout,
+        DioErrorType.receiveTimeout,
+        DioErrorType.connectionTimeout
+      ].contains(error.type)) {
+        _instancesStreamController.addError(Exception(
+            "Unable to connect. Please check your network connection."));
+      } else {
+        _instancesStreamController.addError(error);
+      }
+    }
+  }
 }

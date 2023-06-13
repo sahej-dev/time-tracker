@@ -13,12 +13,14 @@ class OnGoingActivityTile extends StatelessWidget {
     required this.activity,
     required this.instance,
     required this.onStopPressed,
+    required this.onDeletePressed,
     this.margin,
   });
 
   final Activity activity;
   final ActivityInstance instance;
   final void Function()? onStopPressed;
+  final void Function()? onDeletePressed;
   final EdgeInsets? margin;
 
   @override
@@ -69,6 +71,10 @@ class OnGoingActivityTile extends StatelessWidget {
                 const SizedBox(
                   width: kDefaultPadding * 0.5,
                 ),
+                IconButton(
+                  onPressed: onDeletePressed,
+                  icon: const Icon(Icons.delete_rounded),
+                ),
                 IconButton.outlined(
                   onPressed: onStopPressed,
                   color: Theme.of(context).colorScheme.error,
@@ -82,7 +88,7 @@ class OnGoingActivityTile extends StatelessWidget {
                       );
                     }),
                   ),
-                  icon: const Icon(Icons.stop),
+                  icon: const Icon(Icons.stop_rounded),
                 ),
               ],
             ),

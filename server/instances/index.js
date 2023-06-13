@@ -59,4 +59,46 @@ router.put("/:id", async (req, res, next) => {
   next();
 });
 
+router.delete("/:id", async (req, res, next) => {
+  const activityInstance = await ActivityInstance.findByPk(req.params.id, {
+    include: { model: Activity, as: "activity" },
+  });
+
+  if (!activityInstance)
+    return res.status(401).end("invalid activityInstance id provided");
+
+  if (!isActivityOwnerOrSuperuser(req, activityInstance.activity))
+    return res.status(403).end("Forbidden");
+
+  try {
+    await activityInstance.destroy();
+    return res.status(200).end();
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch("/:id", async (req, res, next) => {
+  const activityInstance = await ActivityInstance.findByPk(req.params.id, {
+    paranoid: false,
+    include: { model: Activity, as: "activity" },
+  });
+
+  if (!activityInstance)
+    return res.status(401).end("invalid activityInstance id provided");
+
+  if (!isActivityOwnerOrSuperuser(req, activityInstance.activity))
+    return res.status(403).end("Forbidden");
+
+  try {
+    if (activityInstance.isSoftDeleted()) {
+      await activityInstance.restore();
+    }
+    res.value = activityInstance;
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 exports.instancesRouter = router;

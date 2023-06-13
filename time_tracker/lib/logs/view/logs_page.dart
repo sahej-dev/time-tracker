@@ -58,6 +58,29 @@ class LogsPage extends StatelessWidget {
                                 activity.id ==
                                 logsState.runningInstance!.activityId,
                           ),
+                          onDeletePressed: () {
+                            final bloc = context.read<LogsBloc>();
+                            final instance = logsState.runningInstance!;
+
+                            bloc.add(LogsInstanceDeleted(instance: instance));
+
+                            ScaffoldMessenger.of(context)
+                              ..hideCurrentSnackBar()
+                              ..showSnackBar(
+                                SnackBar(
+                                  content: const Text('Deleted current log'),
+                                  action: SnackBarAction(
+                                    label: 'Undo',
+                                    onPressed: () {
+                                      bloc.add(
+                                        const LogsTryUndoLastDeleted(),
+                                      );
+                                    },
+                                  ),
+                                  showCloseIcon: true,
+                                ),
+                              );
+                          },
                           onStopPressed: () {
                             _stopRunningInstance(context);
                           },
