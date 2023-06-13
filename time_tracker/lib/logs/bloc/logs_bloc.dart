@@ -12,6 +12,9 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
       : _instancesRepository = instancesRepository,
         super(const LogsState.initial()) {
     on<LogsSubscriptionRequested>(_onSubscriptionRequested);
+    on<LogsInstanceAdded>(_onInstanceAdded);
+    on<LogsInstanceStopped>(_onInstanceStopped);
+    on<LogsInstanceEdited>(_onInstanceEdit);
   }
 
   final InstancesRepository _instancesRepository;
@@ -30,6 +33,49 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
           instances: instances,
         );
       },
+      onError: (error, stackTrace) {
+        return state.copyWith(
+          loadingStatus: LoadingStatus.error,
+          exception: Exception(error.toString()),
+        );
+      },
     );
+  }
+
+  Future<void> _onInstanceAdded(
+    LogsInstanceAdded event,
+    Emitter<LogsState> emit,
+  ) async {
+    int runningInstanceIdx =
+        state.instances.indexWhere((instance) => instance.endAt == null);
+    if (event.instance.endAt == null && runningInstanceIdx >= 0) {
+      // closing last running instance (if any) at start time of current instance
+
+      ActivityInstance instanceToBeEnded = state.instances[runningInstanceIdx];
+      _instancesRepository.editInstance(
+        instance: instanceToBeEnded.copyWith(endAt: event.instance.startAt),
+      );
+    }
+
+    // finally creating new instance
+    _instancesRepository.createInstance(instance: event.instance);
+  }
+
+  Future<void> _onInstanceStopped(
+    LogsInstanceStopped event,
+    Emitter<LogsState> emit,
+  ) async {
+    ActivityInstance? instance = state.runningInstance;
+    if (instance == null) return;
+
+    _instancesRepository.editInstance(
+        instance: instance.copyWith(endAt: event.stopTime));
+  }
+
+  Future<void> _onInstanceEdit(
+    LogsInstanceEdited event,
+    Emitter<LogsState> emit,
+  ) async {
+    _instancesRepository.editInstance(instance: event.instance);
   }
 }

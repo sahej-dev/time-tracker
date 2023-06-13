@@ -37,11 +37,12 @@ async function initModels() {
   ActivityInstance.belongsTo(Activity, {
     as: "activity",
     foreignKey: "activity_id",
-    onDelete: "RESTRICT",
+    onDelete: "CASCADE",
   });
   Activity.hasMany(ActivityInstance, {
     as: "instances",
     foreignKey: "activity_id",
+    onDelete: "CASCADE",
   });
 }
 

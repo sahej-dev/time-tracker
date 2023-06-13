@@ -5,8 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'models/models.dart';
 
 class InstancesRepository {
-  final _instancesStreamController =
-      BehaviorSubject<List<ActivityInstance>>.seeded(const []);
+  final _instancesStreamController = BehaviorSubject<List<ActivityInstance>>();
 
   Dio? __dio;
 
@@ -52,13 +51,12 @@ class InstancesRepository {
       for (int i = 0; i < rawInstancesList.length; i++) {
         instances.add(ActivityInstance.fromJson(rawInstancesList[i]));
       }
-
       _instancesStreamController.add(instances);
-    } on DioException catch (error) {
+    } on DioError catch (error) {
       if ([
-        DioExceptionType.sendTimeout,
-        DioExceptionType.receiveTimeout,
-        DioExceptionType.connectionTimeout
+        DioErrorType.sendTimeout,
+        DioErrorType.receiveTimeout,
+        DioErrorType.connectionTimeout
       ].contains(error.type)) {
         _instancesStreamController.addError(Exception(
             "Unable to connect. Please check your network connection."));
@@ -104,11 +102,11 @@ class InstancesRepository {
         _instancesStreamController.add(revertInstances);
         throw Exception("error posting activity instance");
       }
-    } on DioException catch (error) {
+    } on DioError catch (error) {
       if ([
-        DioExceptionType.sendTimeout,
-        DioExceptionType.receiveTimeout,
-        DioExceptionType.connectionTimeout
+        DioErrorType.sendTimeout,
+        DioErrorType.receiveTimeout,
+        DioErrorType.connectionTimeout
       ].contains(error.type)) {
         _instancesStreamController.addError(Exception(
             "Unable to connect. Please check your network connection."));
@@ -154,11 +152,11 @@ class InstancesRepository {
         _instancesStreamController.add(revertInstances);
         throw Exception("error editing activity instance");
       }
-    } on DioException catch (error) {
+    } on DioError catch (error) {
       if ([
-        DioExceptionType.sendTimeout,
-        DioExceptionType.receiveTimeout,
-        DioExceptionType.connectionTimeout
+        DioErrorType.sendTimeout,
+        DioErrorType.receiveTimeout,
+        DioErrorType.connectionTimeout
       ].contains(error.type)) {
         _instancesStreamController.addError(Exception(
             "Unable to connect. Please check your network connection."));

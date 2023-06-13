@@ -22,7 +22,7 @@ router.get("/", async (req, res, next) => {
     return next();
   }
 
-  const instances = ActivityInstance.findAll({
+  const instances = await ActivityInstance.findAll({
     where: { "$activity.user_id$": req.user.id },
     include: { model: Activity, as: "activity", required: true },
   });

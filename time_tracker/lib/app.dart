@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:instances_repository/instances_repository.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:activities_repository/activities_repository.dart';
@@ -214,6 +215,11 @@ class _AppViewState extends State<AppView> {
                 userId: context.read<AuthenticationBloc>().state.user!.id,
               ),
             ),
+            RepositoryProvider(
+              create: (context) => InstancesRepository(
+                secureStorage: widget.secureStorage,
+              ),
+            ),
           ],
           child: Builder(builder: (context) {
             return MultiBlocProvider(
@@ -223,6 +229,11 @@ class _AppViewState extends State<AppView> {
                     activitiesRepository: context.read<ActivitiesRepository>(),
                   )..add(const ActivitiesSubscriptionRequested()),
                 ),
+                BlocProvider(
+                  create: (context) => LogsBloc(
+                    instancesRepository: context.read<InstancesRepository>(),
+                  )..add(const LogsSubscriptionRequested()),
+                )
               ],
               child: app,
             );

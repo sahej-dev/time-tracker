@@ -20,7 +20,7 @@ ActivityInstance _$ActivityInstanceFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ActivityInstance {
-  String get id => throw _privateConstructorUsedError;
+  String? get id => throw _privateConstructorUsedError;
   @JsonKey(name: 'start_at')
   DateTime get startAt => throw _privateConstructorUsedError;
   @JsonKey(name: 'end_at')
@@ -28,7 +28,7 @@ mixin _$ActivityInstance {
   String? get comment => throw _privateConstructorUsedError;
   @JsonKey(name: 'activity_id')
   String get activityId => throw _privateConstructorUsedError;
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime? get createdAt => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -43,12 +43,12 @@ abstract class $ActivityInstanceCopyWith<$Res> {
       _$ActivityInstanceCopyWithImpl<$Res, ActivityInstance>;
   @useResult
   $Res call(
-      {String id,
+      {String? id,
       @JsonKey(name: 'start_at') DateTime startAt,
       @JsonKey(name: 'end_at') DateTime? endAt,
       String? comment,
       @JsonKey(name: 'activity_id') String activityId,
-      DateTime createdAt});
+      DateTime? createdAt});
 }
 
 /// @nodoc
@@ -64,18 +64,18 @@ class _$ActivityInstanceCopyWithImpl<$Res, $Val extends ActivityInstance>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
+    Object? id = freezed,
     Object? startAt = null,
     Object? endAt = freezed,
     Object? comment = freezed,
     Object? activityId = null,
-    Object? createdAt = null,
+    Object? createdAt = freezed,
   }) {
     return _then(_value.copyWith(
-      id: null == id
+      id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       startAt: null == startAt
           ? _value.startAt
           : startAt // ignore: cast_nullable_to_non_nullable
@@ -92,10 +92,10 @@ class _$ActivityInstanceCopyWithImpl<$Res, $Val extends ActivityInstance>
           ? _value.activityId
           : activityId // ignore: cast_nullable_to_non_nullable
               as String,
-      createdAt: null == createdAt
+      createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as DateTime?,
     ) as $Val);
   }
 }
@@ -109,12 +109,12 @@ abstract class _$$_ActivityInstanceCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String id,
+      {String? id,
       @JsonKey(name: 'start_at') DateTime startAt,
       @JsonKey(name: 'end_at') DateTime? endAt,
       String? comment,
       @JsonKey(name: 'activity_id') String activityId,
-      DateTime createdAt});
+      DateTime? createdAt});
 }
 
 /// @nodoc
@@ -128,18 +128,18 @@ class __$$_ActivityInstanceCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
+    Object? id = freezed,
     Object? startAt = null,
     Object? endAt = freezed,
     Object? comment = freezed,
     Object? activityId = null,
-    Object? createdAt = null,
+    Object? createdAt = freezed,
   }) {
     return _then(_$_ActivityInstance(
-      id: null == id
+      id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       startAt: null == startAt
           ? _value.startAt
           : startAt // ignore: cast_nullable_to_non_nullable
@@ -156,10 +156,10 @@ class __$$_ActivityInstanceCopyWithImpl<$Res>
           ? _value.activityId
           : activityId // ignore: cast_nullable_to_non_nullable
               as String,
-      createdAt: null == createdAt
+      createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
+              as DateTime?,
     ));
   }
 }
@@ -169,18 +169,18 @@ class __$$_ActivityInstanceCopyWithImpl<$Res>
 @JsonSerializable(explicitToJson: true)
 class _$_ActivityInstance implements _ActivityInstance {
   const _$_ActivityInstance(
-      {required this.id,
+      {this.id,
       @JsonKey(name: 'start_at') required this.startAt,
-      @JsonKey(name: 'end_at') required this.endAt,
-      required this.comment,
+      @JsonKey(name: 'end_at') this.endAt,
+      this.comment,
       @JsonKey(name: 'activity_id') required this.activityId,
-      required this.createdAt});
+      this.createdAt});
 
   factory _$_ActivityInstance.fromJson(Map<String, dynamic> json) =>
       _$$_ActivityInstanceFromJson(json);
 
   @override
-  final String id;
+  final String? id;
   @override
   @JsonKey(name: 'start_at')
   final DateTime startAt;
@@ -193,7 +193,7 @@ class _$_ActivityInstance implements _ActivityInstance {
   @JsonKey(name: 'activity_id')
   final String activityId;
   @override
-  final DateTime createdAt;
+  final DateTime? createdAt;
 
   @override
   String toString() {
@@ -236,18 +236,18 @@ class _$_ActivityInstance implements _ActivityInstance {
 
 abstract class _ActivityInstance implements ActivityInstance {
   const factory _ActivityInstance(
-      {required final String id,
+      {final String? id,
       @JsonKey(name: 'start_at') required final DateTime startAt,
-      @JsonKey(name: 'end_at') required final DateTime? endAt,
-      required final String? comment,
+      @JsonKey(name: 'end_at') final DateTime? endAt,
+      final String? comment,
       @JsonKey(name: 'activity_id') required final String activityId,
-      required final DateTime createdAt}) = _$_ActivityInstance;
+      final DateTime? createdAt}) = _$_ActivityInstance;
 
   factory _ActivityInstance.fromJson(Map<String, dynamic> json) =
       _$_ActivityInstance.fromJson;
 
   @override
-  String get id;
+  String? get id;
   @override
   @JsonKey(name: 'start_at')
   DateTime get startAt;
@@ -260,7 +260,7 @@ abstract class _ActivityInstance implements ActivityInstance {
   @JsonKey(name: 'activity_id')
   String get activityId;
   @override
-  DateTime get createdAt;
+  DateTime? get createdAt;
   @override
   @JsonKey(ignore: true)
   _$$_ActivityInstanceCopyWith<_$_ActivityInstance> get copyWith =>

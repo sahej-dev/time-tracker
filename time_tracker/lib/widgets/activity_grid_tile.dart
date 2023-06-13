@@ -1,7 +1,7 @@
-import 'package:activities_repository/activities_repository.dart';
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:activities_repository/activities_repository.dart';
 
+import '../../extensions/extensions.dart';
 import '../../constants/constants.dart';
 
 class ActivityGridTile extends StatelessWidget {
@@ -18,9 +18,7 @@ class ActivityGridTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color color = Color(
-      activity.color ?? Theme.of(context).colorScheme.surfaceTint.value,
-    ).harmonizeWith(Theme.of(context).colorScheme.primary);
+    final Color color = activity.getColor(context);
 
     return GridTile(
       child: Card(
@@ -36,11 +34,7 @@ class ActivityGridTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Icon(
-                IconData(
-                  activity.icon.codepoint,
-                  fontFamily: activity.icon.metadata.fontFamily,
-                  fontPackage: activity.icon.metadata.fontPackage,
-                ),
+                activity.getIconData(),
                 color: color,
                 size: kDefaultIconSize * 1.5,
               ),

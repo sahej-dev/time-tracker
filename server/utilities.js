@@ -22,6 +22,90 @@ function isActivityOwnerOrSuperuser(req, activity) {
   );
 }
 
+async function deleteWithChildTablesCascade({
+  sequelize,
+  table,
+  childTables,
+  tablePKs,
+  tablePkAttributeName,
+  options = {},
+}) {
+  const transaction = await sequelize.transaction();
+
+  let childrenWhereClause = { ...options.where };
+  childrenWhereClause[tablePkAttributeName] = tablePKs;
+
+  let tableWhereClause = { ...options.where };
+  tableWhereClause[table.primaryKeyAttribute] = tablePKs;
+
+  try {
+    if (childTables)
+      await Promise.all(
+        childTables.map(async (childTable) =>
+          childTable.destroy({
+            ...options,
+            where: childrenWhereClause,
+            transaction,
+          })
+        )
+      );
+
+    await table.destroy({
+      ...options,
+      where: tableWhereClause,
+      transaction,
+    });
+
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+}
+
+async function restoreWithChildTablesCascade({
+  sequelize,
+  table,
+  childTables,
+  tablePKs,
+  tablePkAttributeName,
+  options = {},
+}) {
+  const transaction = await sequelize.transaction();
+
+  let childrenWhereClause = { ...options.where };
+  childrenWhereClause[tablePkAttributeName] = tablePKs;
+
+  let tableWhereClause = { ...options.where };
+  tableWhereClause[table.primaryKeyAttribute] = tablePKs;
+
+  try {
+    if (childTables)
+      await Promise.all(
+        childTables.map(async (childTable) =>
+          childTable.restore({
+            ...options,
+            where: childrenWhereClause,
+            transaction,
+          })
+        )
+      );
+
+    await table.restore({
+      ...options,
+      where: tableWhereClause,
+      transaction,
+    });
+
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+}
+
 exports.deleteAllNestedProperties = deleteAllNestedProperties;
 exports.setNestedFalseyValuesToNull = setNestedFalseyValuesToNull;
 exports.isActivityOwnerOrSuperuser = isActivityOwnerOrSuperuser;
+exports.deleteWithChildTablesCascade = deleteWithChildTablesCascade;
+exports.restoreWithChildTablesCascade = restoreWithChildTablesCascade;

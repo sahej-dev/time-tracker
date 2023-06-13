@@ -5,3 +5,5 @@ export 'material_search_bar.dart';
 export 'loading_indicator.dart';
 export 'activity_grid_tile.dart';
 export 'error_display.dart';
+export 'on_going_activity_tile.dart';
+export 'timer_text.dart';

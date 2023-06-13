@@ -7,12 +7,12 @@ part 'activity_instance.g.dart';
 class ActivityInstance with _$ActivityInstance {
   @JsonSerializable(explicitToJson: true)
   const factory ActivityInstance({
-    required String id,
+    String? id,
     @JsonKey(name: 'start_at') required DateTime startAt,
-    @JsonKey(name: 'end_at') required DateTime? endAt,
-    required String? comment,
+    @JsonKey(name: 'end_at') DateTime? endAt,
+    String? comment,
     @JsonKey(name: 'activity_id') required String activityId,
-    required DateTime createdAt,
+    DateTime? createdAt,
   }) = _ActivityInstance;
 
   factory ActivityInstance.fromJson(Map<String, dynamic> json) =>

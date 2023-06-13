@@ -8,7 +8,12 @@ const {
   ActivityInstance,
 } = require("../models");
 const { allowOnlySuperuser } = require("../middleware");
-const { isActivityOwnerOrSuperuser } = require("../utilities");
+const {
+  isActivityOwnerOrSuperuser,
+  deleteWithChildTablesCascade,
+  restoreWithChildTablesCascade,
+} = require("../utilities");
+const { sequelize } = require("../db/sequelize");
 
 const router = express.Router();
 
@@ -320,8 +325,15 @@ router.delete("/:id", async (req, res, next) => {
     if (!isActivityOwnerOrSuperuser(req, activity))
       return res.status(403).end("Forbidden");
 
-    await activity.destroy();
-    res.status(200).end();
+    await deleteWithChildTablesCascade({
+      sequelize,
+      table: Activity,
+      childTables: [ActivityInstance],
+      tablePKs: activity.id,
+      tablePkAttributeName: "activity_id",
+    });
+
+    return res.status(200).end();
   } catch (error) {
     next(error);
   }
@@ -343,7 +355,13 @@ router.patch("/:id", async (req, res, next) => {
       return res.status(403).end("Forbidden");
 
     if (activity.isSoftDeleted()) {
-      await activity.restore();
+      await restoreWithChildTablesCascade({
+        sequelize,
+        table: Activity,
+        childTables: [ActivityInstance],
+        tablePKs: activity.id,
+        tablePkAttributeName: "activity_id",
+      });
     }
 
     res.value = activity;

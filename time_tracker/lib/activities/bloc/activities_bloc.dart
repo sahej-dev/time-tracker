@@ -68,11 +68,4 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
     }
     _activitiesRepository.restoreActivity(activity: state.lastDeleted!);
   }
-
-  @override
-  void onEvent(ActivitiesEvent event) {
-    super.onEvent(event);
-
-    print(event);
-  }
 }

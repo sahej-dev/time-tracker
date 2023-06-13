@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:instances_repository/instances_repository.dart';
+
+import '../bloc/logs_bloc.dart';
 import '../../activities/activities.dart';
 import '../../constants/constants.dart';
 import '../../types.dart';
@@ -14,45 +17,116 @@ class LogsPage extends StatelessWidget {
       );
   static PreferredSizeWidget? Function() fabBuilder() => () => null;
 
+  void _stopRunningInstance(BuildContext context) {
+    context.read<LogsBloc>().add(
+          LogsInstanceStopped(
+            stopTime: DateTime.now(),
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ActivitiesBloc, ActivitiesState>(
-      builder: (context, state) {
-        switch (state.loadingStatus) {
-          case LoadingStatus.initial:
-          case LoadingStatus.pending:
-            return const LoadingIndicator();
+      builder: (context, activitiesState) {
+        return BlocBuilder<LogsBloc, LogsState>(
+          builder: (context, logsState) {
+            switch (LoadingStatusMixer.mix([
+              activitiesState.loadingStatus,
+              logsState.loadingStatus,
+            ])) {
+              case LoadingStatus.initial:
+              case LoadingStatus.pending:
+                return const LoadingIndicator();
 
-          case LoadingStatus.error:
-            print("nice");
-            return ErrorDisplay(
-              error: state.exception,
-            );
+              case LoadingStatus.error:
+                return ErrorDisplay(
+                  error: activitiesState.exception ?? logsState.exception,
+                );
 
-          case LoadingStatus.success:
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-              child: GridView.builder(
-                itemCount: state.activities.length,
-                itemBuilder: (context, index) {
-                  final activity = state.activities[index];
-                  return GridTile(
-                    child: ActivityGridTile(
-                      activity: activity,
-                      onTap: () {},
-                      onLongPress: () {},
-                    ),
-                  );
-                },
-                gridDelegate: kDefaultGridDelegate,
-              ),
-            );
-          default:
-            return Text(
-              "Uknown loading state ${state.loadingStatus}. Please contact developers",
-              style: Theme.of(context).textTheme.bodyLarge,
-            );
-        }
+              case LoadingStatus.success:
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                  child: Column(
+                    children: [
+                      if (logsState.runningInstance != null)
+                        OnGoingActivityTile(
+                          instance: logsState.runningInstance!,
+                          activity: activitiesState.activities.firstWhere(
+                            (activity) =>
+                                activity.id ==
+                                logsState.runningInstance!.activityId,
+                          ),
+                          onStopPressed: () {
+                            _stopRunningInstance(context);
+                          },
+                        ),
+                      Expanded(
+                        child: GridView.builder(
+                          itemCount: activitiesState.activities.length,
+                          itemBuilder: (context, index) {
+                            final activity = activitiesState.activities[index];
+                            return GridTile(
+                              child: Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  ActivityGridTile(
+                                    activity: activity,
+                                    onTap: () {
+                                      if (logsState
+                                              .runningInstance?.activityId ==
+                                          activity.id) {
+                                        _stopRunningInstance(context);
+                                      } else {
+                                        // add new instance
+                                        context.read<LogsBloc>().add(
+                                              LogsInstanceAdded(
+                                                instance: ActivityInstance(
+                                                  activityId: activity.id,
+                                                  startAt: DateTime.now(),
+                                                ),
+                                              ),
+                                            );
+                                      }
+                                    },
+                                    onLongPress: () {},
+                                  ),
+                                  if (activity.id ==
+                                      logsState.runningInstance?.activityId)
+                                    Positioned(
+                                      right: kDefaultPadding * 0.75,
+                                      top: kDefaultPadding * 0.75,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          borderRadius:
+                                              BorderRadius.circular(300),
+                                        ),
+                                        width: 8,
+                                        height: 8,
+                                      ),
+                                    )
+                                ],
+                              ),
+                            );
+                          },
+                          gridDelegate: kDefaultGridDelegate,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              default:
+                return Text(
+                  "Uknown loading state ${activitiesState.loadingStatus}. Please contact developers",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                );
+            }
+          },
+        );
       },
     );
   }
