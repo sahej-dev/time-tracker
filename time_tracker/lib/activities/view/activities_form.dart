@@ -52,6 +52,7 @@ class _ActivityFormState extends State<ActivityForm> {
   late Icon chosenIcon;
   late Color chosenColor;
   late TextEditingController activityNameController;
+  Activity? activity;
 
   Icon getDefaultIcon() {
     return const Icon(MdiIcons.pencil);
@@ -75,16 +76,16 @@ class _ActivityFormState extends State<ActivityForm> {
       chosenColor = getDefaultColor();
     } else {
       // show page for editing existing activity
-      Activity activity = widget._activitiesBloc.state.activities[activityIdx];
+      activity = widget._activitiesBloc.state.activities[activityIdx];
 
-      activityNameController = TextEditingController(text: activity.label);
+      activityNameController = TextEditingController(text: activity!.label);
       chosenIcon = Icon(IconData(
-        activity.icon.codepoint,
-        fontFamily: activity.icon.metadata.fontFamily,
-        fontPackage: activity.icon.metadata.fontPackage,
+        activity!.icon.codepoint,
+        fontFamily: activity!.icon.metadata.fontFamily,
+        fontPackage: activity!.icon.metadata.fontPackage,
       ));
       chosenColor =
-          activity.color != null ? Color(activity.color!) : getDefaultColor();
+          activity!.color != null ? Color(activity!.color!) : getDefaultColor();
     }
   }
 
@@ -94,7 +95,7 @@ class _ActivityFormState extends State<ActivityForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Create new activity",
+          widget.id == null ? "Create new activity" : "Edit activity",
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const Padding(padding: EdgeInsets.only(top: kDefaultPadding * 1.75)),
@@ -189,6 +190,38 @@ class _ActivityFormState extends State<ActivityForm> {
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
+            if (activity != null)
+              TextButton(
+                onPressed: () {
+                  widget._activitiesBloc.add(
+                    ActivitiesDeleted(activity: activity!),
+                  );
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                      SnackBar(
+                        content: Text('Deleted activity ${activity!.label}'),
+                        action: SnackBarAction(
+                          label: 'Undo',
+                          onPressed: () {
+                            widget._activitiesBloc.add(
+                              const ActivitiesTryUndoLastDeleted(),
+                            );
+                          },
+                        ),
+                        showCloseIcon: true,
+                      ),
+                    );
+
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  "Delete",
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                ),
+              ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);

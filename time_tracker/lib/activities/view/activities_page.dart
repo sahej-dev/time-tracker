@@ -63,50 +63,6 @@ class _ActivitiesPageView extends StatelessWidget {
                             bloc: context.read<ActivitiesBloc>(),
                             activityId: activity.id);
                       },
-                      onLongPress: () {
-                        final ActivitiesBloc bloc =
-                            context.read<ActivitiesBloc>();
-
-                        showModalBottomSheet(
-                          clipBehavior: Clip.antiAlias,
-                          useRootNavigator: true,
-                          context: context,
-                          builder: (context) {
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ListTile(
-                                  title: const Text("Delete"),
-                                  leading: const Icon(Icons.delete),
-                                  onTap: () {
-                                    bloc.add(
-                                      ActivitiesDeleted(activity: activity),
-                                    );
-                                    ScaffoldMessenger.of(context)
-                                      ..hideCurrentSnackBar()
-                                      ..showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              'Deleted activity ${activity.label}'),
-                                          action: SnackBarAction(
-                                            label: 'Undo',
-                                            onPressed: () {
-                                              bloc.add(
-                                                const ActivitiesTryUndoLastDeleted(),
-                                              );
-                                            },
-                                          ),
-                                          showCloseIcon: true,
-                                        ),
-                                      );
-                                    Navigator.pop(context);
-                                  },
-                                )
-                              ],
-                            );
-                          },
-                        );
-                      },
                     ),
                   );
                 },
