@@ -37,7 +37,9 @@ class HistoryPage extends StatelessWidget {
             return ListView.separated(
               itemCount: state.instances.length,
               separatorBuilder: (context, index) {
-                return const Divider();
+                return const Divider(
+                  height: 0,
+                );
               },
               itemBuilder: (context, index) {
                 ActivityInstance instance = state.instances[index];
@@ -48,7 +50,8 @@ class HistoryPage extends StatelessWidget {
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         );
 
-                return ListTile(
+                final listTile = ListTile(
+                  onTap: () {},
                   enableFeedback: true,
                   leading: Card(
                     elevation: 12,
@@ -61,30 +64,46 @@ class HistoryPage extends StatelessWidget {
                   ),
                   title: Text(
                     activity?.label ?? '-',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      instance.endAt == null
-                          ? Text(
-                              "${instance.startAt.toMoment().toLocal().calendar(omitHours: true)} on going",
-                              style: subtitleTextStyle,
-                            )
-                          : Text(
-                              "${instance.startAt.toMoment().toLocal().calendar(omitHours: true)} for ${instance.duration!.toDurationString(
-                                form: UnitStringForm.short,
-                                dropPrefixOrSuffix: true,
-                              )}",
-                              style: subtitleTextStyle,
-                            ),
                       Text(
-                        "${instance.startAt.toMoment().toLocal().formatTime()} - ${instance.endAt == null ? 'now' : instance.endAt!.toMoment().toLocal().formatTime()}",
+                        "${instance.startAt.toMoment().toLocal().formatTime()} - ${instance.endAt == null ? 'now' : instance.endAt!.toMoment().toLocal().formatTime()}${instance.endAt == null ? '' : ' (${instance.duration!.toDurationString(
+                            form: UnitStringForm.short,
+                            dropPrefixOrSuffix: true,
+                          )})'}",
                         style: subtitleTextStyle,
                       ),
                     ],
                   ),
                   iconColor: activity?.getColor(context) ??
                       Theme.of(context).colorScheme.primary,
+                );
+
+                ActivityInstance? lastInstance;
+                if (index > 0) lastInstance = state.instances[index - 1];
+
+                return Column(
+                  children: [
+                    if (index == 0 ||
+                        (lastInstance != null &&
+                            lastInstance.startAt
+                                    .toMoment()
+                                    .toLocal()
+                                    .formatDate() !=
+                                instance.startAt
+                                    .toMoment()
+                                    .toLocal()
+                                    .formatDate()))
+                      ListTile(
+                        title: Text(
+                            instance.startAt.toMoment().toLocal().formatDate()),
+                      ),
+                    listTile,
+                  ],
                 );
               },
             );
