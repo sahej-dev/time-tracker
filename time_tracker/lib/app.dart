@@ -15,6 +15,7 @@ import 'color_schemes.g.dart';
 import 'activities/activities.dart';
 import 'login/login.dart';
 import 'logs/logs.dart';
+import 'history/history.dart';
 import 'splash/splash.dart';
 import 'app_shell.dart';
 
@@ -133,7 +134,7 @@ class _AppViewState extends State<AppView> {
       case AuthenticationStatus.authenticated:
         return GoRouter(
           navigatorKey: rootNavigatorKey,
-          initialLocation: '/logs',
+          initialLocation: '/history',
           routes: [
             StatefulShellRoute.indexedStack(
               builder: (BuildContext context, GoRouterState state,
@@ -142,11 +143,13 @@ class _AppViewState extends State<AppView> {
                   navigationShell: navigationShell,
                   appBarBuilders: [
                     LogsPage.appBarBuilder(),
+                    HistoryPage.appBarBuilder(),
                     ActivitiesPage.appBarBuilder(),
                   ],
                   floatingActionButtonBuilders: [
                     LogsPage.fabBuilder(),
-                    ActivitiesPage.fabBuilder()
+                    HistoryPage.fabBuilder(),
+                    ActivitiesPage.fabBuilder(),
                   ],
                 );
               },
@@ -163,12 +166,21 @@ class _AppViewState extends State<AppView> {
                 StatefulShellBranch(
                   routes: [
                     GoRoute(
+                      path: '/history',
+                      name: 'History',
+                      builder: (context, state) => const HistoryPage(),
+                    ),
+                  ],
+                ),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
                       path: '/activities',
                       name: 'Activities',
                       builder: (context, state) => const ActivitiesPage(),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ],
@@ -233,7 +245,17 @@ class _AppViewState extends State<AppView> {
                   create: (context) => LogsBloc(
                     instancesRepository: context.read<InstancesRepository>(),
                   )..add(const LogsSubscriptionRequested()),
-                )
+                ),
+                BlocProvider(
+                  create: (context) => HistoryBloc(
+                    activitiesRepository: context.read<ActivitiesRepository>(),
+                    instancesRepository: context.read<InstancesRepository>(),
+                  )
+                    ..add(const HistoryActivitiesSubscriptionsRequested())
+                    ..add(
+                      const HistoryLogsSubscriptionsRequested(),
+                    ),
+                ),
               ],
               child: app,
             );

@@ -7,6 +7,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import './widgets/widgets.dart';
 import '../bloc/activities_bloc.dart';
 import '../../constants/constants.dart';
+import '../../extensions/extensions.dart';
 
 class ActivityForm extends StatefulWidget {
   const ActivityForm({
@@ -128,11 +129,7 @@ class _ActivityFormState extends State<ActivityForm> {
                   ),
                   style: ButtonStyle(
                     backgroundColor: MaterialStatePropertyAll(
-                      chosenColor
-                          .harmonizeWith(
-                            Theme.of(context).colorScheme.primary,
-                          )
-                          .withAlpha(50),
+                      chosenColor.backgroundColor(context),
                     ),
                   ),
                   onPressed: () async {
