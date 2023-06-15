@@ -78,6 +78,39 @@ router.delete("/:id", async (req, res, next) => {
   }
 });
 
+router.delete("/", async (req, res, next) => {
+  const { ids } = req.body;
+
+  if (!ids)
+    return res
+      .status(401)
+      .send('body parameter "ids" required for instances delete endpoint');
+
+  try {
+    let instancesToDestroy;
+    if (req.user.is_super_user) {
+      instancesToDestroy = await ActivityInstance.findAll({
+        where: { id: ids },
+        include: { model: Activity, as: "activity", required: true },
+      });
+    } else {
+      instancesToDestroy = await ActivityInstance.findAll({
+        where: { id: ids, "$activity.user_id$": req.user.id },
+        include: { model: Activity, as: "activity", required: true },
+      });
+    }
+
+    await ActivityInstance.destroy({
+      where: { id: instancesToDestroy.map((instance) => instance.id) },
+    });
+
+    return res.status(200).end();
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
 router.patch("/:id", async (req, res, next) => {
   const activityInstance = await ActivityInstance.findByPk(req.params.id, {
     paranoid: false,
@@ -95,6 +128,38 @@ router.patch("/:id", async (req, res, next) => {
       await activityInstance.restore();
     }
     res.value = activityInstance;
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch("/", async (req, res, next) => {
+  const { ids } = req.body;
+
+  if (!ids)
+    return res
+      .status(401)
+      .send('body parameter "ids" required for instances delete endpoint');
+
+  try {
+    if (req.user.is_super_user) {
+      whereClause = { id: ids };
+    } else {
+      whereClause = { id: ids, "$activity.user_id$": req.user.id };
+    }
+
+    let instancesToRestore = await ActivityInstance.findAll({
+      where: whereClause,
+      include: { model: Activity, as: "activity", required: true },
+      paranoid: false,
+    });
+
+    await ActivityInstance.restore({
+      where: { id: instancesToRestore.map((instance) => instance.id) },
+    });
+
+    res.value = instancesToRestore;
     next();
   } catch (error) {
     next(error);

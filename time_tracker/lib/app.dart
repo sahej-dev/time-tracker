@@ -143,7 +143,7 @@ class _AppViewState extends State<AppView> {
                   navigationShell: navigationShell,
                   appBarBuilders: [
                     LogsPage.appBarBuilder(),
-                    HistoryPage.appBarBuilder(),
+                    HistoryPage.appBarBuilder(context),
                     ActivitiesPage.appBarBuilder(),
                   ],
                   floatingActionButtonBuilders: [

@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:dio/dio.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -231,6 +233,108 @@ class InstancesRepository {
       } else {
         _instancesStreamController.add(revertInstances);
         throw Exception("error restoring activity instance");
+      }
+    } on DioError catch (error) {
+      if ([
+        DioErrorType.sendTimeout,
+        DioErrorType.receiveTimeout,
+        DioErrorType.connectionTimeout
+      ].contains(error.type)) {
+        _instancesStreamController.addError(Exception(
+            "Unable to connect. Please check your network connection."));
+      } else {
+        _instancesStreamController.addError(error);
+      }
+    }
+  }
+
+  Future<void> deleteMultipleInstances(
+      {required List<ActivityInstance> instances}) async {
+    final List<ActivityInstance> revertInstances = [
+      ..._instancesStreamController.value
+    ];
+    final List<ActivityInstance> newInstances = [
+      ..._instancesStreamController.value
+    ];
+
+    newInstances.removeWhere((instance) => instances.contains(instance));
+    _instancesStreamController.add(newInstances);
+
+    final dio = await _dio;
+
+    try {
+      final Response response = await dio.delete(
+        "/instances",
+        data: {
+          "ids": instances.map((e) => e.id).toList(),
+        },
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode != 200) {
+        _instancesStreamController.add(revertInstances);
+        throw Exception("error deleting multiple activity instances");
+      }
+    } on DioError catch (error) {
+      if ([
+        DioErrorType.sendTimeout,
+        DioErrorType.receiveTimeout,
+        DioErrorType.connectionTimeout
+      ].contains(error.type)) {
+        _instancesStreamController.addError(Exception(
+            "Unable to connect. Please check your network connection."));
+      } else {
+        _instancesStreamController.addError(error);
+      }
+    }
+  }
+
+  Future<void> restoreMultipleInstance(
+      {required List<ActivityInstance> instances}) async {
+    final List<ActivityInstance> revertInstances = [
+      ..._instancesStreamController.value
+    ];
+    final List<ActivityInstance> newInstances = [
+      ..._instancesStreamController.value
+    ];
+
+    instances.removeWhere((instance) => revertInstances.contains(instance));
+
+    newInstances.addAll(instances);
+    _instancesStreamController.add(newInstances);
+
+    final dio = await _dio;
+
+    try {
+      final Response response = await dio.patch(
+        "/instances",
+        data: {
+          "ids": instances.map((e) => e.id).toList(),
+        },
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final rawInstancesList = response.data as List<dynamic>;
+
+        final List<ActivityInstance> restoredInstances = [];
+        for (int i = 0; i < rawInstancesList.length; i++) {
+          restoredInstances.add(ActivityInstance.fromJson(rawInstancesList[i]));
+        }
+
+        revertInstances.addAll(restoredInstances);
+        _instancesStreamController.add(revertInstances);
+      } else {
+        _instancesStreamController.add(revertInstances);
+        throw Exception("error restoring multiple activity instances");
       }
     } on DioError catch (error) {
       if ([

@@ -7,6 +7,9 @@ class HistoryState extends Equatable {
 
   final HashMap<String, Activity> _activities;
   final List<ActivityInstance> _instances;
+  final List<ActivityInstance> selectedInstances;
+
+  final List<ActivityInstance>? lastDeleted;
 
   final Exception? exception;
 
@@ -16,6 +19,8 @@ class HistoryState extends Equatable {
     HashMap<String, Activity>? activities,
     List<ActivityInstance> instances = const [],
     this.exception,
+    this.selectedInstances = const [],
+    this.lastDeleted,
   })  : _instances = instances,
         _activitiesLoadingStatus = activitiesLoadingStatus,
         _logsLoadingStatus = logsLoadingStatus,
@@ -31,6 +36,8 @@ class HistoryState extends Equatable {
         _instances,
         exception,
         loadingStatus,
+        selectedInstances,
+        lastDeleted,
       ];
 
   HistoryState copyWith({
@@ -39,7 +46,12 @@ class HistoryState extends Equatable {
     List<Activity>? activities,
     List<ActivityInstance>? instances,
     Exception? exception,
+    List<ActivityInstance>? selectedInstances,
+    List<ActivityInstance>? lastDeleted,
   }) {
+    // invalidating sorted cache if the original list changes
+    if (instances != null) _sortedInstances = null;
+
     return HistoryState._(
       activitiesLoadingStatus:
           activitiesLoadingStatus ?? _activitiesLoadingStatus,
@@ -47,7 +59,7 @@ class HistoryState extends Equatable {
       activities: activities != null
           ? HashMap.fromEntries(activities.map((e) => MapEntry(e.id, e)))
           : _activities,
-      instances: instances ?? this._instances,
+      instances: instances ?? _instances,
       exception: LoadingStatusMixer.mix([
                 activitiesLoadingStatus ?? _activitiesLoadingStatus,
                 logsLoadingStatus ?? _logsLoadingStatus
@@ -55,6 +67,8 @@ class HistoryState extends Equatable {
               LoadingStatus.error
           ? null
           : (exception ?? this.exception),
+      selectedInstances: selectedInstances ?? this.selectedInstances,
+      lastDeleted: lastDeleted ?? this.lastDeleted,
     );
   }
 
