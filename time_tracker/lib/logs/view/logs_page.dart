@@ -117,20 +117,10 @@ class LogsPage extends StatelessWidget {
                                   ),
                                   if (activity.id ==
                                       logsState.runningInstance?.activityId)
-                                    Positioned(
+                                    const Positioned(
                                       right: kDefaultPadding * 0.75,
                                       top: kDefaultPadding * 0.75,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                          borderRadius:
-                                              BorderRadius.circular(300),
-                                        ),
-                                        width: 8,
-                                        height: 8,
-                                      ),
+                                      child: ActiveDot(),
                                     )
                                 ],
                               ),
