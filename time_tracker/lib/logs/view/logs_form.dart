@@ -234,6 +234,14 @@ class _LogsFormState extends State<LogsForm> {
                             ),
                           );
 
+                      ScaffoldMessenger.of(context)
+                        ..hideCurrentSnackBar()
+                        ..showSnackBar(
+                          const SnackBar(
+                            content: Text("Logged activity"),
+                          ),
+                        );
+
                       Navigator.pop(context);
                     }
                   : null,
