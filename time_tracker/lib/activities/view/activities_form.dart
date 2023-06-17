@@ -108,6 +108,9 @@ class _ActivityFormState extends State<ActivityForm> {
             labelText: "Activity Name",
             hintText: "e.g. Gaming",
           ),
+          onChanged: (value) {
+            setState(() {});
+          },
         ),
         const Padding(padding: EdgeInsets.only(top: kDefaultPadding)),
         Row(

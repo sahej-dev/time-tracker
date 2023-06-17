@@ -29,6 +29,7 @@ class LogsState extends Equatable {
         instances,
         exception,
         lastDeleted,
+        _activities,
       ];
 
   LogsState copyWith({
