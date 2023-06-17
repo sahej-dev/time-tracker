@@ -47,6 +47,7 @@ class _IconChooserDialogState extends State<IconChooserDialog> {
             MaterialSearchBar(
               controller: _searchController,
               autofocus: true,
+              hintText: "Search Icons",
               onChanged: (value) {
                 if (value.isEmpty) {
                   setState(() {

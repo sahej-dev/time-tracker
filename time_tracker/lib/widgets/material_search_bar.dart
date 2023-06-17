@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 class MaterialSearchBar extends StatefulWidget {
   const MaterialSearchBar({
     super.key,
-    this.controller,
+    required TextEditingController controller,
     this.onChanged,
+    this.hintText,
     this.autofocus = false,
-  });
+  }) : _controller = controller;
 
+  final String? hintText;
   final bool autofocus;
-  final TextEditingController? controller;
+  final TextEditingController _controller;
   final void Function(String value)? onChanged;
 
   @override
@@ -35,7 +37,7 @@ class _MaterialSearchBarState extends State<MaterialSearchBar> {
         textFieldFocus.unfocus();
         setState(() {
           prefixIcon = const Icon(Icons.search);
-          if (widget.controller == null || widget.controller!.text.isEmpty) {
+          if (widget._controller.text.isEmpty) {
             showClearButton = false;
           }
         });
@@ -47,7 +49,7 @@ class _MaterialSearchBarState extends State<MaterialSearchBar> {
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: widget.controller,
+      controller: widget._controller,
       onChanged: widget.onChanged,
       focusNode: textFieldFocus,
       autofocus: widget.autofocus,
@@ -57,7 +59,7 @@ class _MaterialSearchBarState extends State<MaterialSearchBar> {
           borderSide: BorderSide.none,
         ),
         filled: true,
-        hintText: "Search icons",
+        hintText: widget.hintText ?? "Search",
         prefixIcon: prefixIcon,
         suffixIcon: showClearButton
             ? IconButton(
@@ -67,7 +69,7 @@ class _MaterialSearchBarState extends State<MaterialSearchBar> {
                     prefixIcon = const Icon(Icons.search);
                     showClearButton = false;
 
-                    widget.controller?.clear();
+                    widget._controller.clear();
                     if (widget.onChanged != null) {
                       widget.onChanged!('');
                     }

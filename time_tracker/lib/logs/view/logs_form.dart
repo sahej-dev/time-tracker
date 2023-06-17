@@ -13,10 +13,7 @@ import '../../constants/constants.dart';
 class LogsForm extends StatefulWidget {
   const LogsForm({
     super.key,
-    required this.activitiesBloc,
   });
-
-  final ActivitiesBloc activitiesBloc;
 
   @override
   State<LogsForm> createState() => _LogsFormState();
@@ -34,9 +31,7 @@ class LogsForm extends StatefulWidget {
           padding: const EdgeInsets.symmetric(
             horizontal: kDefaultPadding * 2,
           ),
-          child: LogsForm(
-            activitiesBloc: context.read<ActivitiesBloc>(),
-          ),
+          child: const LogsForm(),
         );
       },
     );
@@ -72,7 +67,7 @@ class _LogsFormState extends State<LogsForm> {
               context: context,
               builder: (context) {
                 return ActivityChooserDialog(
-                  activitiesBloc: widget.activitiesBloc,
+                  activitiesBloc: context.read<ActivitiesBloc>(),
                 );
               },
             );
@@ -85,13 +80,6 @@ class _LogsFormState extends State<LogsForm> {
           },
         ),
         const Padding(padding: EdgeInsets.only(top: kDefaultPadding * 1.75)),
-        // InputDatePickerFormField(
-        //   initialDate: DateTime.now(),
-        //   firstDate: DateTime(1970),
-        //   lastDate: DateTime(2100),
-        //   fieldLabelText: "Start date",
-        //   keyboardType: TextInputType.none,
-        // ),
         Row(
           children: [
             Expanded(
