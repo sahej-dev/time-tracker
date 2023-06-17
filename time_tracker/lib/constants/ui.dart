@@ -7,6 +7,13 @@ const double kDefaultBorderRadius = 12;
 const SliverGridDelegate kDefaultGridDelegate =
     SliverGridDelegateWithFixedCrossAxisCount(
   crossAxisCount: 3,
-  crossAxisSpacing: kDefaultPadding * 0.25,
-  mainAxisSpacing: kDefaultPadding * 0.25,
+  crossAxisSpacing: kDefaultPadding * 0.5,
+  mainAxisSpacing: kDefaultPadding * 0.5,
+);
+
+const SliverGridDelegate kActivityChooserGridDelegate =
+    SliverGridDelegateWithFixedCrossAxisCount(
+  crossAxisCount: 4,
+  crossAxisSpacing: kDefaultPadding * 0.33,
+  mainAxisSpacing: kDefaultPadding * 0.33,
 );

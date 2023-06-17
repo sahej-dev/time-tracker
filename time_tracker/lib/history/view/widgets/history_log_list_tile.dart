@@ -6,7 +6,7 @@ import 'package:instances_repository/instances_repository.dart';
 import 'package:moment_dart/moment_dart.dart';
 
 import '../../bloc/history_bloc.dart';
-import '../../../constants/constants.dart';
+import '../../../widgets/widgets.dart';
 import '../../../extensions/extensions.dart';
 
 class HistoryLogListTile extends StatelessWidget {
@@ -54,19 +54,7 @@ class HistoryLogListTile extends StatelessWidget {
       },
       enableFeedback: true,
       selected: isTileSelected,
-      leading: Card(
-        elevation: 12,
-        shadowColor: Colors.transparent,
-        surfaceTintColor: activity?.getColor(context),
-        child: Padding(
-          padding: const EdgeInsets.all(kDefaultPadding * 0.5),
-          child: Icon(
-            activity?.getIconData() ?? Icons.cancel,
-            color: activity?.getColor(context) ??
-                Theme.of(context).colorScheme.primary,
-          ),
-        ),
-      ),
+      leading: ActivityLogoOnlyIcon(activity: activity),
       trailing: !isAnySelectionPresent
           ? null
           : Icon(

@@ -4,6 +4,13 @@ abstract class LogsEvent extends Equatable {
   const LogsEvent();
 }
 
+class LogsActivitiesSubscriptionRequested extends LogsEvent {
+  const LogsActivitiesSubscriptionRequested();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class LogsSubscriptionRequested extends LogsEvent {
   const LogsSubscriptionRequested();
 

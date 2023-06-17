@@ -1,38 +1,65 @@
 part of 'logs_bloc.dart';
 
 class LogsState extends Equatable {
+  final LoadingStatus _activitiesLoadingStatus;
+  final LoadingStatus _logsLoadingStatus;
+
+  final HashMap<String, Activity> _activities;
   final List<ActivityInstance> instances;
-  final LoadingStatus loadingStatus;
   final Exception? exception;
   final ActivityInstance? lastDeleted;
 
-  const LogsState._({
+  LogsState._({
+    LoadingStatus activitiesLoadingStatus = LoadingStatus.initial,
+    LoadingStatus logsLoadingStatus = LoadingStatus.initial,
     this.instances = const [],
-    this.loadingStatus = LoadingStatus.initial,
+    HashMap<String, Activity>? activities,
     this.exception,
     this.lastDeleted,
-  });
+  })  : _activitiesLoadingStatus = activitiesLoadingStatus,
+        _logsLoadingStatus = logsLoadingStatus,
+        _activities = activities ?? HashMap();
 
-  const LogsState.initial() : this._();
+  LogsState.initial() : this._();
 
   @override
-  List<Object?> get props => [loadingStatus, instances, exception, lastDeleted];
+  List<Object?> get props => [
+        _activitiesLoadingStatus,
+        _logsLoadingStatus,
+        instances,
+        exception,
+        lastDeleted,
+      ];
 
   LogsState copyWith({
-    LoadingStatus? loadingStatus,
+    LoadingStatus? activitiesLoadingStatus,
+    LoadingStatus? logsLoadingStatus,
     List<ActivityInstance>? instances,
+    List<Activity>? activities,
     Exception? exception,
     ActivityInstance? lastDeleted,
   }) {
     return LogsState._(
+      activitiesLoadingStatus:
+          activitiesLoadingStatus ?? _activitiesLoadingStatus,
+      logsLoadingStatus: logsLoadingStatus ?? _logsLoadingStatus,
       instances: instances ?? this.instances,
-      loadingStatus: loadingStatus ?? this.loadingStatus,
       lastDeleted: lastDeleted ?? this.lastDeleted,
-      exception: (loadingStatus ?? this.loadingStatus) != LoadingStatus.error
+      activities: activities != null
+          ? HashMap.fromEntries(activities.map((e) => MapEntry(e.id, e)))
+          : _activities,
+      exception: LoadingStatusMixer.mix([
+                activitiesLoadingStatus ?? _activitiesLoadingStatus,
+                logsLoadingStatus ?? _logsLoadingStatus
+              ]) !=
+              LoadingStatus.error
           ? null
           : (exception ?? this.exception),
     );
   }
+
+  LoadingStatus get loadingStatus =>
+      LoadingStatusMixer.mix([_activitiesLoadingStatus, _logsLoadingStatus]);
 
   ActivityInstance? get runningInstance {
     int idx = instances.indexWhere((instance) => instance.endAt == null);
@@ -40,4 +67,7 @@ class LogsState extends Equatable {
 
     return instances[idx];
   }
+
+  Activity? Function(ActivityInstance) get activityForInstance =>
+      (ActivityInstance instance) => _activities[instance.activityId];
 }

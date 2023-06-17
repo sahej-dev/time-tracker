@@ -9,3 +9,4 @@ export 'on_going_activity_tile.dart';
 export 'timer_text.dart';
 export 'date_header_list_tile.dart';
 export 'active_dot.dart';
+export 'activity_logo_only_icon.dart';

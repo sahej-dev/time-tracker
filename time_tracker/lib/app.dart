@@ -134,7 +134,7 @@ class _AppViewState extends State<AppView> {
       case AuthenticationStatus.authenticated:
         return GoRouter(
           navigatorKey: rootNavigatorKey,
-          initialLocation: '/history',
+          initialLocation: '/logs',
           routes: [
             StatefulShellRoute.indexedStack(
               builder: (BuildContext context, GoRouterState state,
@@ -243,8 +243,11 @@ class _AppViewState extends State<AppView> {
                 ),
                 BlocProvider(
                   create: (context) => LogsBloc(
+                    activitiesRepository: context.read<ActivitiesRepository>(),
                     instancesRepository: context.read<InstancesRepository>(),
-                  )..add(const LogsSubscriptionRequested()),
+                  )
+                    ..add(const LogsActivitiesSubscriptionRequested())
+                    ..add(const LogsSubscriptionRequested()),
                 ),
                 BlocProvider(
                   create: (context) => HistoryBloc(

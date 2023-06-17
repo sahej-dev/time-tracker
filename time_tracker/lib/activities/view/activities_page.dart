@@ -54,16 +54,15 @@ class _ActivitiesPageView extends StatelessWidget {
                 itemCount: state.activities.length,
                 itemBuilder: (context, index) {
                   final activity = state.activities[index];
-                  return GridTile(
-                    child: ActivityGridTile(
-                      activity: activity,
-                      onTap: () {
-                        ActivityForm.showAddEditBottomSheet(
-                            context: context,
-                            bloc: context.read<ActivitiesBloc>(),
-                            activityId: activity.id);
-                      },
-                    ),
+                  return ActivityGridTile(
+                    activity: activity,
+                    onTap: () {
+                      ActivityForm.showAddEditBottomSheet(
+                        context: context,
+                        bloc: context.read<ActivitiesBloc>(),
+                        activityId: activity.id,
+                      );
+                    },
                   );
                 },
                 gridDelegate: kDefaultGridDelegate,

@@ -227,55 +227,57 @@ class _ActivityFormState extends State<ActivityForm> {
             ),
             const Padding(padding: EdgeInsets.only(left: kDefaultPadding)),
             FilledButton(
-                onPressed: () {
-                  if (widget.id == null) {
-                    widget._activitiesBloc.add(
-                      ActivitiesNewAdded(
-                        activity: Activity(
-                          id: '',
-                          label: activityNameController.text,
-                          color: chosenColor.value,
-                          createdAt: DateTime.now(),
-                          icon: IconModel(
-                            id: '',
-                            codepoint: chosenIcon.icon!.codePoint,
-                            createdAt: DateTime.now(),
-                            metadata: IconMetadata(
-                              id: '',
-                              fontFamily: chosenIcon.icon?.fontFamily,
-                              fontPackage: chosenIcon.icon?.fontPackage,
-                              createdAt: DateTime.now(),
+                onPressed: activityNameController.text.isEmpty
+                    ? null
+                    : () {
+                        if (widget.id == null) {
+                          widget._activitiesBloc.add(
+                            ActivitiesNewAdded(
+                              activity: Activity(
+                                id: '',
+                                label: activityNameController.text,
+                                color: chosenColor.value,
+                                createdAt: DateTime.now(),
+                                icon: IconModel(
+                                  id: '',
+                                  codepoint: chosenIcon.icon!.codePoint,
+                                  createdAt: DateTime.now(),
+                                  metadata: IconMetadata(
+                                    id: '',
+                                    fontFamily: chosenIcon.icon?.fontFamily,
+                                    fontPackage: chosenIcon.icon?.fontPackage,
+                                    createdAt: DateTime.now(),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
-                    );
-                  } else {
-                    widget._activitiesBloc.add(
-                      ActivitiesEdited(
-                        activity: Activity(
-                          id: widget.id!,
-                          label: activityNameController.text,
-                          color: chosenColor.value,
-                          createdAt: DateTime.now(),
-                          icon: IconModel(
-                            id: '',
-                            codepoint: chosenIcon.icon!.codePoint,
-                            createdAt: DateTime.now(),
-                            metadata: IconMetadata(
-                              id: '',
-                              fontFamily: chosenIcon.icon?.fontFamily,
-                              fontPackage: chosenIcon.icon?.fontPackage,
-                              createdAt: DateTime.now(),
+                          );
+                        } else {
+                          widget._activitiesBloc.add(
+                            ActivitiesEdited(
+                              activity: Activity(
+                                id: widget.id!,
+                                label: activityNameController.text,
+                                color: chosenColor.value,
+                                createdAt: DateTime.now(),
+                                icon: IconModel(
+                                  id: '',
+                                  codepoint: chosenIcon.icon!.codePoint,
+                                  createdAt: DateTime.now(),
+                                  metadata: IconMetadata(
+                                    id: '',
+                                    fontFamily: chosenIcon.icon?.fontFamily,
+                                    fontPackage: chosenIcon.icon?.fontPackage,
+                                    createdAt: DateTime.now(),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }
+                          );
+                        }
 
-                  Navigator.of(context).pop();
-                },
+                        Navigator.of(context).pop();
+                      },
                 child: const Text("Done")),
           ],
         )

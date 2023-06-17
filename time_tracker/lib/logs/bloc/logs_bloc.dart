@@ -1,3 +1,6 @@
+import 'dart:collection';
+
+import 'package:activities_repository/activities_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:instances_repository/instances_repository.dart';
@@ -8,10 +11,14 @@ part 'logs_event.dart';
 part 'logs_state.dart';
 
 class LogsBloc extends Bloc<LogsEvent, LogsState> {
-  LogsBloc({required InstancesRepository instancesRepository})
-      : _instancesRepository = instancesRepository,
-        super(const LogsState.initial()) {
-    on<LogsSubscriptionRequested>(_onSubscriptionRequested);
+  LogsBloc(
+      {required ActivitiesRepository activitiesRepository,
+      required InstancesRepository instancesRepository})
+      : _activitiesRepository = activitiesRepository,
+        _instancesRepository = instancesRepository,
+        super(LogsState.initial()) {
+    on<LogsActivitiesSubscriptionRequested>(_onActivitiesSubscriptionRequested);
+    on<LogsSubscriptionRequested>(_onLogsSubscriptionRequested);
     on<LogsInstanceAdded>(_onInstanceAdded);
     on<LogsInstanceStopped>(_onInstanceStopped);
     on<LogsInstanceEdited>(_onInstanceEdit);
@@ -20,24 +27,52 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
   }
 
   final InstancesRepository _instancesRepository;
+  final ActivitiesRepository _activitiesRepository;
 
-  Future<void> _onSubscriptionRequested(
+  Future<void> _onActivitiesSubscriptionRequested(
+    LogsActivitiesSubscriptionRequested event,
+    Emitter<LogsState> emit,
+  ) async {
+    emit(state.copyWith(
+      activitiesLoadingStatus: LoadingStatus.pending,
+    ));
+
+    await emit.forEach<List<Activity>>(
+      _activitiesRepository.getActivites(),
+      onData: (activities) {
+        return state.copyWith(
+          activitiesLoadingStatus: LoadingStatus.success,
+          activities: activities,
+        );
+      },
+      onError: (error, stackTrace) {
+        return state.copyWith(
+          activitiesLoadingStatus: LoadingStatus.error,
+          exception: Exception(error.toString()),
+        );
+      },
+    );
+  }
+
+  Future<void> _onLogsSubscriptionRequested(
     LogsSubscriptionRequested event,
     Emitter<LogsState> emit,
   ) async {
-    emit(state.copyWith(loadingStatus: LoadingStatus.pending));
+    emit(state.copyWith(
+      logsLoadingStatus: LoadingStatus.pending,
+    ));
 
     await emit.forEach<List<ActivityInstance>>(
       _instancesRepository.getInstances(),
       onData: (instances) {
         return state.copyWith(
-          loadingStatus: LoadingStatus.success,
+          logsLoadingStatus: LoadingStatus.success,
           instances: instances,
         );
       },
       onError: (error, stackTrace) {
         return state.copyWith(
-          loadingStatus: LoadingStatus.error,
+          logsLoadingStatus: LoadingStatus.error,
           exception: Exception(error.toString()),
         );
       },
@@ -52,6 +87,7 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
         state.instances.indexWhere((instance) => instance.endAt == null);
     if (event.instance.endAt == null && runningInstanceIdx >= 0) {
       // closing last running instance (if any) at start time of current instance
+      // if current instance is a running instance
 
       ActivityInstance instanceToBeEnded = state.instances[runningInstanceIdx];
       await _instancesRepository.editInstance(
