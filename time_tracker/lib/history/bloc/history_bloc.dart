@@ -185,4 +185,33 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
       instances: instancesToRestore,
     );
   }
+
+  @override
+  void onChange(Change<HistoryState> change) {
+    super.onChange(change);
+
+    final Iterable<String> currKeys = change.currentState._activities.keys;
+    final Iterable<String> nextKeys = change.nextState._activities.keys;
+
+    final bool isSomethingBeingDeleted = currKeys.length > nextKeys.length;
+    final bool isSomethingBeingAdded = currKeys.length < nextKeys.length;
+
+    if (isSomethingBeingDeleted) {
+      final Iterable<String> keysBeingDeleted = currKeys.where(
+        (currKey) => !nextKeys.contains(currKey),
+      );
+
+      for (String key in keysBeingDeleted) {
+        _instancesRepository.locallyDeleteInstancesOfActivity(key);
+      }
+    } else if (isSomethingBeingAdded) {
+      final Iterable<String> keysBeingAdded = nextKeys.where(
+        (nextKey) => !currKeys.contains(nextKey),
+      );
+
+      for (String key in keysBeingAdded) {
+        _instancesRepository.restoreLocallyDeletedInstanceOfActivity(key);
+      }
+    }
+  }
 }

@@ -9,6 +9,8 @@ import 'models/models.dart';
 class InstancesRepository {
   final _instancesStreamController = BehaviorSubject<List<ActivityInstance>>();
 
+  List<ActivityInstance> _locallyDeletedInstances = [];
+
   Dio? __dio;
 
   Future<Dio> get _dio async {
@@ -348,5 +350,37 @@ class InstancesRepository {
         _instancesStreamController.addError(error);
       }
     }
+  }
+
+  void locallyDeleteInstancesOfActivity(String activityId) {
+    List<ActivityInstance> instances = [..._instancesStreamController.value];
+
+    _locallyDeletedInstances.addAll(
+      instances.where((instance) => instance.activityId == activityId),
+    );
+
+    instances.removeWhere((instance) => instance.activityId == activityId);
+
+    _instancesStreamController.add(instances);
+  }
+
+  void restoreLocallyDeletedInstanceOfActivity(String activityId) {
+    if (_locallyDeletedInstances.isEmpty ||
+        _locallyDeletedInstances
+                .indexWhere((instance) => instance.activityId == activityId) <
+            0) return;
+
+    List<ActivityInstance> instances = [..._instancesStreamController.value];
+
+    instances.addAll(
+      _locallyDeletedInstances
+          .where((instance) => instance.activityId == activityId),
+    );
+
+    _locallyDeletedInstances.removeWhere(
+      (instance) => instance.activityId == activityId,
+    );
+
+    _instancesStreamController.add(instances);
   }
 }
