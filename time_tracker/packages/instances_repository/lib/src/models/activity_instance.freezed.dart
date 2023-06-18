@@ -21,8 +21,10 @@ ActivityInstance _$ActivityInstanceFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$ActivityInstance {
   String? get id => throw _privateConstructorUsedError;
+  @DateTimeConverter()
   @JsonKey(name: 'start_at')
   DateTime get startAt => throw _privateConstructorUsedError;
+  @DateTimeConverterNullable()
   @JsonKey(name: 'end_at')
   DateTime? get endAt => throw _privateConstructorUsedError;
   String? get comment => throw _privateConstructorUsedError;
@@ -44,8 +46,8 @@ abstract class $ActivityInstanceCopyWith<$Res> {
   @useResult
   $Res call(
       {String? id,
-      @JsonKey(name: 'start_at') DateTime startAt,
-      @JsonKey(name: 'end_at') DateTime? endAt,
+      @DateTimeConverter() @JsonKey(name: 'start_at') DateTime startAt,
+      @DateTimeConverterNullable() @JsonKey(name: 'end_at') DateTime? endAt,
       String? comment,
       @JsonKey(name: 'activity_id') String activityId,
       DateTime? createdAt});
@@ -110,8 +112,8 @@ abstract class _$$_ActivityInstanceCopyWith<$Res>
   @useResult
   $Res call(
       {String? id,
-      @JsonKey(name: 'start_at') DateTime startAt,
-      @JsonKey(name: 'end_at') DateTime? endAt,
+      @DateTimeConverter() @JsonKey(name: 'start_at') DateTime startAt,
+      @DateTimeConverterNullable() @JsonKey(name: 'end_at') DateTime? endAt,
       String? comment,
       @JsonKey(name: 'activity_id') String activityId,
       DateTime? createdAt});
@@ -170,8 +172,8 @@ class __$$_ActivityInstanceCopyWithImpl<$Res>
 class _$_ActivityInstance implements _ActivityInstance {
   const _$_ActivityInstance(
       {this.id,
-      @JsonKey(name: 'start_at') required this.startAt,
-      @JsonKey(name: 'end_at') this.endAt,
+      @DateTimeConverter() @JsonKey(name: 'start_at') required this.startAt,
+      @DateTimeConverterNullable() @JsonKey(name: 'end_at') this.endAt,
       this.comment,
       @JsonKey(name: 'activity_id') required this.activityId,
       this.createdAt});
@@ -182,9 +184,11 @@ class _$_ActivityInstance implements _ActivityInstance {
   @override
   final String? id;
   @override
+  @DateTimeConverter()
   @JsonKey(name: 'start_at')
   final DateTime startAt;
   @override
+  @DateTimeConverterNullable()
   @JsonKey(name: 'end_at')
   final DateTime? endAt;
   @override
@@ -237,10 +241,15 @@ class _$_ActivityInstance implements _ActivityInstance {
 abstract class _ActivityInstance implements ActivityInstance {
   const factory _ActivityInstance(
       {final String? id,
-      @JsonKey(name: 'start_at') required final DateTime startAt,
-      @JsonKey(name: 'end_at') final DateTime? endAt,
+      @DateTimeConverter()
+      @JsonKey(name: 'start_at')
+          required final DateTime startAt,
+      @DateTimeConverterNullable()
+      @JsonKey(name: 'end_at')
+          final DateTime? endAt,
       final String? comment,
-      @JsonKey(name: 'activity_id') required final String activityId,
+      @JsonKey(name: 'activity_id')
+          required final String activityId,
       final DateTime? createdAt}) = _$_ActivityInstance;
 
   factory _ActivityInstance.fromJson(Map<String, dynamic> json) =
@@ -249,9 +258,11 @@ abstract class _ActivityInstance implements ActivityInstance {
   @override
   String? get id;
   @override
+  @DateTimeConverter()
   @JsonKey(name: 'start_at')
   DateTime get startAt;
   @override
+  @DateTimeConverterNullable()
   @JsonKey(name: 'end_at')
   DateTime? get endAt;
   @override

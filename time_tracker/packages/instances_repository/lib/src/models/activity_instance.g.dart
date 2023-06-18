@@ -9,10 +9,9 @@ part of 'activity_instance.dart';
 _$_ActivityInstance _$$_ActivityInstanceFromJson(Map<String, dynamic> json) =>
     _$_ActivityInstance(
       id: json['id'] as String?,
-      startAt: DateTime.parse(json['start_at'] as String),
-      endAt: json['end_at'] == null
-          ? null
-          : DateTime.parse(json['end_at'] as String),
+      startAt: const DateTimeConverter().fromJson(json['start_at'] as String),
+      endAt:
+          const DateTimeConverterNullable().fromJson(json['end_at'] as String?),
       comment: json['comment'] as String?,
       activityId: json['activity_id'] as String,
       createdAt: json['createdAt'] == null
@@ -23,8 +22,8 @@ _$_ActivityInstance _$$_ActivityInstanceFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$_ActivityInstanceToJson(_$_ActivityInstance instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'start_at': instance.startAt.toIso8601String(),
-      'end_at': instance.endAt?.toIso8601String(),
+      'start_at': const DateTimeConverter().toJson(instance.startAt),
+      'end_at': const DateTimeConverterNullable().toJson(instance.endAt),
       'comment': instance.comment,
       'activity_id': instance.activityId,
       'createdAt': instance.createdAt?.toIso8601String(),

@@ -9,7 +9,7 @@ class ActivityInstance with _$ActivityInstance {
   const factory ActivityInstance({
     String? id,
     @DateTimeConverter() @JsonKey(name: 'start_at') required DateTime startAt,
-    @DateTimeConverter() @JsonKey(name: 'end_at') DateTime? endAt,
+    @DateTimeConverterNullable() @JsonKey(name: 'end_at') DateTime? endAt,
     String? comment,
     @JsonKey(name: 'activity_id') required String activityId,
     DateTime? createdAt,
@@ -19,8 +19,18 @@ class ActivityInstance with _$ActivityInstance {
       _$ActivityInstanceFromJson(json);
 }
 
-class DateTimeConverter implements JsonConverter<DateTime?, String?> {
+class DateTimeConverter implements JsonConverter<DateTime, String> {
   const DateTimeConverter();
+
+  @override
+  DateTime fromJson(String json) => DateTime.parse(json).toLocal();
+
+  @override
+  String toJson(DateTime value) => value.toUtc().toIso8601String();
+}
+
+class DateTimeConverterNullable implements JsonConverter<DateTime?, String?> {
+  const DateTimeConverterNullable();
 
   @override
   DateTime? fromJson(String? json) =>
