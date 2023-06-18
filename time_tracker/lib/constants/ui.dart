@@ -4,6 +4,8 @@ const double kDefaultPadding = 16;
 const double kDefaultIconSize = 24;
 const double kDefaultBorderRadius = 12;
 
+const double kDefaultDisableOpacity = 0.3;
+
 const SliverGridDelegate kDefaultGridDelegate =
     SliverGridDelegateWithFixedCrossAxisCount(
   crossAxisCount: 3,

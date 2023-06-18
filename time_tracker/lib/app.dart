@@ -16,6 +16,7 @@ import 'activities/activities.dart';
 import 'login/login.dart';
 import 'logs/logs.dart';
 import 'history/history.dart';
+import 'settings/settings.dart';
 import 'splash/splash.dart';
 import 'app_shell.dart';
 
@@ -61,7 +62,7 @@ class _AppState extends State<App> {
           authenticationRepository: _authenticationRepository,
           userRepository: _userRepository,
         ),
-        child: AppView(
+        child: AuthBasedRepositoryBlocProviderWidget(
           secureStorage: widget.secureStorage,
         ),
       ),
@@ -69,40 +70,19 @@ class _AppState extends State<App> {
   }
 }
 
-class AppView extends StatefulWidget {
-  const AppView({super.key, required this.secureStorage});
+class AuthBasedRepositoryBlocProviderWidget extends StatefulWidget {
+  const AuthBasedRepositoryBlocProviderWidget(
+      {super.key, required this.secureStorage});
 
   final FlutterSecureStorage secureStorage;
 
   @override
-  State<AppView> createState() => _AppViewState();
+  State<AuthBasedRepositoryBlocProviderWidget> createState() =>
+      _AuthBasedRepositoryBlocProviderWidgetState();
 }
 
-class _AppViewState extends State<AppView> {
-  ThemeData _buildTheme(
-    Brightness brightness,
-    Function gFontTextThemeGenerator,
-    ColorScheme colorScheme,
-  ) {
-    late final ThemeData baseTheme;
-    if (brightness == Brightness.light) {
-      baseTheme = ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.light,
-        colorScheme: colorScheme.harmonized(),
-      );
-    } else {
-      baseTheme = ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        colorScheme: colorScheme.harmonized(),
-      );
-    }
-
-    return baseTheme.copyWith(
-        textTheme: gFontTextThemeGenerator(baseTheme.textTheme));
-  }
-
+class _AuthBasedRepositoryBlocProviderWidgetState
+    extends State<AuthBasedRepositoryBlocProviderWidget> {
   GoRouter getRouterConfig(AuthenticationStatus authStatus) {
     final GlobalKey<NavigatorState> rootNavigatorKey =
         GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -145,11 +125,13 @@ class _AppViewState extends State<AppView> {
                     LogsPage.appBarBuilder(),
                     HistoryPage.appBarBuilder(context),
                     ActivitiesPage.appBarBuilder(),
+                    SettingsPage.appBarBuilder(),
                   ],
                   floatingActionButtonBuilders: [
                     LogsPage.fabBuilder(),
                     HistoryPage.fabBuilder(),
                     ActivitiesPage.fabBuilder(),
+                    SettingsPage.fabBuilder(),
                   ],
                 );
               },
@@ -181,6 +163,15 @@ class _AppViewState extends State<AppView> {
                     ),
                   ],
                 ),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: '/settings',
+                      name: 'Settings',
+                      builder: (context, state) => const SettingsPage(),
+                    ),
+                  ],
+                ),
               ],
             ),
           ],
@@ -190,79 +181,151 @@ class _AppViewState extends State<AppView> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => SettingsBloc(),
+      child: BlocSelector<AuthenticationBloc, AuthenticationState,
+          AuthenticationStatus>(
+        selector: (state) {
+          return state.status;
+        },
+
+        /// provides repositories & blocs that depend on authentication status
+        builder: (context, authStatus) {
+          final Widget app = AppView(
+            goRouter: getRouterConfig(authStatus),
+          );
+
+          if (authStatus != AuthenticationStatus.authenticated) return app;
+
+          return MultiRepositoryProvider(
+            providers: [
+              RepositoryProvider(
+                create: (context) => ActivitiesRepository(
+                  secureStorage: widget.secureStorage,
+                  userId: context.read<AuthenticationBloc>().state.user!.id,
+                ),
+              ),
+              RepositoryProvider(
+                create: (context) => InstancesRepository(
+                  secureStorage: widget.secureStorage,
+                ),
+              ),
+            ],
+            child: Builder(builder: (context) {
+              return MultiBlocProvider(
+                providers: [
+                  BlocProvider<ActivitiesBloc>(
+                    create: (context) => ActivitiesBloc(
+                      activitiesRepository:
+                          context.read<ActivitiesRepository>(),
+                    )..add(const ActivitiesSubscriptionRequested()),
+                  ),
+                  BlocProvider(
+                    create: (context) => LogsBloc(
+                      activitiesRepository:
+                          context.read<ActivitiesRepository>(),
+                      instancesRepository: context.read<InstancesRepository>(),
+                    )
+                      ..add(const LogsActivitiesSubscriptionRequested())
+                      ..add(const LogsSubscriptionRequested()),
+                  ),
+                  BlocProvider(
+                    create: (context) => HistoryBloc(
+                      activitiesRepository:
+                          context.read<ActivitiesRepository>(),
+                      instancesRepository: context.read<InstancesRepository>(),
+                    )
+                      ..add(const HistoryActivitiesSubscriptionsRequested())
+                      ..add(
+                        const HistoryLogsSubscriptionsRequested(),
+                      ),
+                  ),
+                ],
+                child: app,
+              );
+            }),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class AppView extends StatelessWidget {
+  const AppView({
+    super.key,
+    required this.goRouter,
+  });
+
+  final GoRouter goRouter;
+
+  ThemeData _buildTheme(
+    Brightness brightness,
+    Function gFontTextThemeGenerator,
+    ColorScheme colorScheme,
+  ) {
+    late final ThemeData baseTheme;
+    if (brightness == Brightness.light) {
+      baseTheme = ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.light,
+        colorScheme: colorScheme.harmonized(),
+      );
+    } else {
+      baseTheme = ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorScheme: colorScheme.harmonized(),
+      );
+    }
+
+    return baseTheme.copyWith(
+        textTheme: gFontTextThemeGenerator(baseTheme.textTheme));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     const TextTheme Function([TextTheme?]) textThemeGenerator =
         GoogleFonts.montserratTextTheme;
 
-    return BlocSelector<AuthenticationBloc, AuthenticationState,
-        AuthenticationStatus>(
-      selector: (state) {
-        return state.status;
-      },
+    return DynamicColorBuilder(
+      builder: (lightDynamic, darkDynamic) {
+        return BlocBuilder<SettingsBloc, SettingsState>(
+          builder: (context, state) {
+            ColorScheme lightPreferredScheme = state.accentColor == null
+                ? lightColorScheme
+                : ColorScheme.fromSeed(
+                    seedColor: state.accentColor!,
+                    brightness: Brightness.light,
+                  );
 
-      /// provides repositories & blocs that depend on authentication status
-      builder: (context, authStatus) {
-        final MaterialApp app = MaterialApp.router(
-          routerConfig: getRouterConfig(authStatus),
-          title: 'Flutter Demo',
-          theme: _buildTheme(
-            Brightness.light,
-            textThemeGenerator,
-            lightColorScheme,
-          ),
-          darkTheme: _buildTheme(
-            Brightness.dark,
-            textThemeGenerator,
-            darkColorScheme,
-          ),
-          themeMode: ThemeMode.dark,
-        );
+            ColorScheme darkPreferredScheme = state.accentColor == null
+                ? lightColorScheme
+                : ColorScheme.fromSeed(
+                    seedColor: state.accentColor!,
+                    brightness: Brightness.dark,
+                  );
 
-        if (authStatus != AuthenticationStatus.authenticated) return app;
-
-        return MultiRepositoryProvider(
-          providers: [
-            RepositoryProvider(
-              create: (context) => ActivitiesRepository(
-                secureStorage: widget.secureStorage,
-                userId: context.read<AuthenticationBloc>().state.user!.id,
+            return MaterialApp.router(
+              routerConfig: goRouter,
+              title: 'Flutter Demo',
+              theme: _buildTheme(
+                Brightness.light,
+                textThemeGenerator,
+                state.accentColorSource == AccentColorSource.material3
+                    ? lightDynamic ?? lightPreferredScheme
+                    : lightPreferredScheme,
               ),
-            ),
-            RepositoryProvider(
-              create: (context) => InstancesRepository(
-                secureStorage: widget.secureStorage,
+              darkTheme: _buildTheme(
+                Brightness.dark,
+                textThemeGenerator,
+                state.accentColorSource == AccentColorSource.material3
+                    ? darkDynamic ?? darkPreferredScheme
+                    : darkPreferredScheme,
               ),
-            ),
-          ],
-          child: Builder(builder: (context) {
-            return MultiBlocProvider(
-              providers: [
-                BlocProvider<ActivitiesBloc>(
-                  create: (context) => ActivitiesBloc(
-                    activitiesRepository: context.read<ActivitiesRepository>(),
-                  )..add(const ActivitiesSubscriptionRequested()),
-                ),
-                BlocProvider(
-                  create: (context) => LogsBloc(
-                    activitiesRepository: context.read<ActivitiesRepository>(),
-                    instancesRepository: context.read<InstancesRepository>(),
-                  )
-                    ..add(const LogsActivitiesSubscriptionRequested())
-                    ..add(const LogsSubscriptionRequested()),
-                ),
-                BlocProvider(
-                  create: (context) => HistoryBloc(
-                    activitiesRepository: context.read<ActivitiesRepository>(),
-                    instancesRepository: context.read<InstancesRepository>(),
-                  )
-                    ..add(const HistoryActivitiesSubscriptionsRequested())
-                    ..add(
-                      const HistoryLogsSubscriptionsRequested(),
-                    ),
-                ),
-              ],
-              child: app,
+              themeMode: state.themeMode,
             );
-          }),
+          },
         );
       },
     );

@@ -10,3 +10,4 @@ export 'timer_text.dart';
 export 'date_header_list_tile.dart';
 export 'active_dot.dart';
 export 'activity_logo_only_icon.dart';
+export 'color_picker_dialog.dart';

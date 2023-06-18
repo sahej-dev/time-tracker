@@ -20,16 +20,19 @@ class AppShell extends StatelessWidget {
     MdiIcons.clipboardListOutline,
     Icons.history_outlined,
     Icons.edit_outlined,
+    Icons.settings_outlined,
   ];
   final List<IconData> _selectedIcons = const [
     MdiIcons.clipboardList,
     Icons.history,
     Icons.edit,
+    Icons.settings,
   ];
   final List<String> _navLabels = const [
     "Logs",
     "History",
     "Activities",
+    "Settings",
   ];
 
   @override
