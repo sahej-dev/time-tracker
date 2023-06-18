@@ -113,4 +113,5 @@ app.use(function parseResponseValue(req, res, next) {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
   console.log(`NODE_ENV is: ${process.env.NODE_ENV}`);
+  console.log(`JWT_LIFETIME_SECS is: ${process.env.JWT_LIFETIME_SECS}`);
 });
