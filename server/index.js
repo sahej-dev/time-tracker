@@ -2,7 +2,6 @@ const fs = require("fs");
 
 const express = require("express");
 const cors = require("cors");
-const passport = require("passport");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 
@@ -47,8 +46,7 @@ app.use(express.json());
 app.use(helmet());
 app.use(cors(corsOptions));
 app.use(logger);
-// app.use(rateLimiterConfig);
-// app.use(passport.initialize());
+app.use(rateLimiterConfig);
 
 app.disable("x-powered-by");
 
@@ -68,7 +66,7 @@ app.delete("*", function removeFalseyValues(req, res, next) {
 });
 
 app.get("/", (req, res) => {
-  res.send("Running");
+  res.send("Running Time Track");
 });
 
 app.use("/api/v1/auth", authRouter);
