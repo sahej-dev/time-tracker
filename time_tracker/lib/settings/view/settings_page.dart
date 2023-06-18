@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:time_tracker/authentication/authentication.dart';
 
 import '../bloc/settings_bloc.dart';
 import '../widgets/widgets.dart';
@@ -85,6 +86,18 @@ class SettingsPage extends StatelessWidget {
                   ),
                 ),
               const ThemeSeedColorTile(),
+              const Divider(),
+              TextButton(
+                child: const Text(
+                  "Log out",
+                  textAlign: TextAlign.start,
+                ),
+                onPressed: () {
+                  context.read<AuthenticationBloc>().add(
+                        AuthenticationLogoutRequested(),
+                      );
+                },
+              ),
             ],
           ),
         );
