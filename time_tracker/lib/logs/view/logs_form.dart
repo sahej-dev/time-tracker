@@ -215,8 +215,8 @@ class _LogsFormState extends State<LogsForm> {
                       context.read<LogsBloc>().add(
                             LogsInstanceAdded(
                               instance: ActivityInstance(
-                                startAt: chosenStartDateTime,
-                                endAt: chosenEndDateTime,
+                                startAt: chosenStartDateTime.toLocal(),
+                                endAt: chosenEndDateTime?.toLocal(),
                                 activityId: selectedActivity!.id,
                               ),
                             ),

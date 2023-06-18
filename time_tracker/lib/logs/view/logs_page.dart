@@ -22,7 +22,7 @@ class LogsPage extends StatelessWidget {
   void _stopRunningInstance(BuildContext context) {
     context.read<LogsBloc>().add(
           LogsInstanceStopped(
-            stopTime: DateTime.now(),
+            stopTime: DateTime.now().toLocal(),
           ),
         );
   }
@@ -103,7 +103,8 @@ class LogsPage extends StatelessWidget {
                                             LogsInstanceAdded(
                                               instance: ActivityInstance(
                                                 activityId: activity.id,
-                                                startAt: DateTime.now(),
+                                                startAt:
+                                                    DateTime.now().toLocal(),
                                               ),
                                             ),
                                           );
