@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'app.dart';
 
-void main() async {
+void mainDelegate() async {
   const FlutterSecureStorage secureStorage = FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
   );

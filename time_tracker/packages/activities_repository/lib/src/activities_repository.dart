@@ -23,7 +23,7 @@ class ActivitiesRepository {
     }
 
     __dio = Dio(BaseOptions(
-      baseUrl: "http://10.0.2.2:2000/api/v1/activities",
+      baseUrl: "${apiUrl}/api/v1/activities",
       headers: {"authorization": "Bearer ${token}"},
       sendTimeout: Duration(seconds: 5),
       connectTimeout: Duration(seconds: 5),
@@ -33,11 +33,13 @@ class ActivitiesRepository {
     return __dio!;
   }
 
+  final String apiUrl;
   FlutterSecureStorage _secureStorage;
 
   ActivitiesRepository({
     required FlutterSecureStorage secureStorage,
     required String userId,
+    required this.apiUrl,
   }) : _secureStorage = secureStorage {
     _init(userId: userId);
   }

@@ -25,7 +25,7 @@ class InstancesRepository {
     }
 
     __dio = Dio(BaseOptions(
-      baseUrl: "http://10.0.2.2:2000/api/v1",
+      baseUrl: "${apiUrl}/api/v1",
       headers: {"authorization": "Bearer ${token}"},
       sendTimeout: Duration(seconds: 5),
       connectTimeout: Duration(seconds: 5),
@@ -36,9 +36,11 @@ class InstancesRepository {
   }
 
   FlutterSecureStorage _secureStorage;
+  final String apiUrl;
 
   InstancesRepository({
     required FlutterSecureStorage secureStorage,
+    required this.apiUrl,
   }) : _secureStorage = secureStorage {
     _init();
   }

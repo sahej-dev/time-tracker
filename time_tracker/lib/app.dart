@@ -1,3 +1,4 @@
+import 'package:flavor/flavor.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dynamic_color/dynamic_color.dart';
@@ -37,8 +38,14 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    _authenticationRepository = AuthenticationRepository();
-    _userRepository = UserRepository(secureStorage: widget.secureStorage);
+    _authenticationRepository = AuthenticationRepository(
+      secureStorage: widget.secureStorage,
+      apiUrl: Flavor.I.getString(Keys.apiUrl)!,
+    );
+    _userRepository = UserRepository(
+      secureStorage: widget.secureStorage,
+      apiUrl: Flavor.I.getString(Keys.apiUrl)!,
+    );
   }
 
   @override
@@ -208,11 +215,13 @@ class _AuthBasedRepositoryBlocProviderWidgetState
                 create: (context) => ActivitiesRepository(
                   secureStorage: widget.secureStorage,
                   userId: context.read<AuthenticationBloc>().state.user!.id,
+                  apiUrl: Flavor.I.getString(Keys.apiUrl)!,
                 ),
               ),
               RepositoryProvider(
                 create: (context) => InstancesRepository(
                   secureStorage: widget.secureStorage,
+                  apiUrl: Flavor.I.getString(Keys.apiUrl)!,
                 ),
               ),
             ],
@@ -305,7 +314,7 @@ class AppView extends StatelessWidget {
                   );
 
             ColorScheme darkPreferredScheme = state.accentColor == null
-                ? lightColorScheme
+                ? darkColorScheme
                 : ColorScheme.fromSeed(
                     seedColor: state.accentColor!,
                     brightness: Brightness.dark,

@@ -47,6 +47,7 @@ dependencies:
   moment_dart: ^0.17.4
   json_annotation: ^4.8.1
   path_provider: ^2.0.15
+  flavor: ^2.0.0
 
   # keep the static version of material_design_icons_flutter as the
   # library does not follow semantic versioning

@@ -6,17 +6,33 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 enum AuthenticationStatus { unknown, authenticated, unauthenticated }
 
 class AuthenticationRepository {
-  final _dio = Dio(BaseOptions(
-    baseUrl: "http://10.0.2.2:2000/api/v1/auth",
-    sendTimeout: Duration(seconds: 5),
-    connectTimeout: Duration(seconds: 5),
-    receiveTimeout: Duration(seconds: 5),
-  ));
-
+  final String apiUrl;
   final _controller = StreamController<AuthenticationStatus>();
-  final _secureStorage = FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-  );
+  final FlutterSecureStorage secureStorage;
+
+  AuthenticationRepository({
+    required this.apiUrl,
+    required this.secureStorage,
+  }) {
+    print("API URL: ${apiUrl}");
+  }
+
+  Dio? __dio;
+
+  Future<Dio> get _dio async {
+    if (__dio != null) {
+      return __dio!;
+    }
+
+    __dio = Dio(BaseOptions(
+      baseUrl: "${apiUrl}/api/v1/auth",
+      sendTimeout: Duration(seconds: 5),
+      connectTimeout: Duration(seconds: 5),
+      receiveTimeout: Duration(seconds: 5),
+    ));
+
+    return __dio!;
+  }
 
   Stream<AuthenticationStatus> get status async* {
     yield AuthenticationStatus.authenticated;
@@ -24,16 +40,18 @@ class AuthenticationRepository {
   }
 
   Future<void> storeToken(String token) async {
-    return _secureStorage.write(key: 'token', value: token);
+    return secureStorage.write(key: 'token', value: token);
   }
 
   Future<void> logIn({
     required String email,
     required String password,
   }) async {
+    final dio = await _dio;
+
     try {
       print("email pass is: ${email} ${password}");
-      final Response response = await _dio.post(
+      final Response response = await dio.post(
         "/signin",
         data: {
           "email": email,
@@ -60,6 +78,8 @@ class AuthenticationRepository {
     required String fullName,
     String? phone,
   }) async {
+    final dio = await _dio;
+
     final List<String> names = fullName.split(' ');
     final String firstName = names[0];
 
@@ -71,7 +91,7 @@ class AuthenticationRepository {
     }
 
     try {
-      final Response response = await _dio.post(
+      final Response response = await dio.post(
         "/signup",
         data: {
           "email": email,
@@ -93,7 +113,7 @@ class AuthenticationRepository {
   }
 
   void logOut() async {
-    await _secureStorage.delete(key: "token");
+    await secureStorage.delete(key: "token");
     _controller.add(AuthenticationStatus.unauthenticated);
   }
 
