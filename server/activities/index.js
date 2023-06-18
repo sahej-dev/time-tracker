@@ -361,6 +361,7 @@ router.patch("/:id", async (req, res, next) => {
         childTables: [ActivityInstance],
         tablePKs: activity.id,
         tablePkAttributeName: "activity_id",
+        rowDeletedAt: activity.deletedAt,
       });
     }
 

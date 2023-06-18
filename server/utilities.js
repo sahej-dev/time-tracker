@@ -1,3 +1,5 @@
+const { Op } = require("sequelize");
+
 function deleteAllNestedProperties(obj, propertyName) {
   if (!obj) return;
   delete obj[propertyName];
@@ -69,12 +71,15 @@ async function restoreWithChildTablesCascade({
   childTables,
   tablePKs,
   tablePkAttributeName,
+  rowDeletedAt,
   options = {},
 }) {
   const transaction = await sequelize.transaction();
 
   let childrenWhereClause = { ...options.where };
   childrenWhereClause[tablePkAttributeName] = tablePKs;
+  if (rowDeletedAt)
+    childrenWhereClause["deletedAt"] = { [Op.gte]: rowDeletedAt };
 
   let tableWhereClause = { ...options.where };
   tableWhereClause[table.primaryKeyAttribute] = tablePKs;
