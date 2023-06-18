@@ -71,6 +71,7 @@ class HistoryLogListTile extends StatelessWidget {
         "${instance.startAt.toMoment().toLocal().formatTime()} - ${instance.endAt == null ? 'now' : instance.endAt!.toMoment().toLocal().formatTime()}${instance.endAt == null ? '' : ' (${instance.duration!.toDurationString(
             form: UnitStringForm.short,
             dropPrefixOrSuffix: true,
+            format: DurationFormat.hm,
           )})'}",
         style: subtitleTextStyle,
       ),
