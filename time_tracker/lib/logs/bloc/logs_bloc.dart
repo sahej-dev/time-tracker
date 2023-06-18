@@ -107,7 +107,7 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
     if (instance == null) return;
 
     _instancesRepository.editInstance(
-        instance: instance.copyWith(endAt: event.stopTime));
+        instance: instance.copyWith(endAt: event.stopTime.toLocal()));
   }
 
   Future<void> _onInstanceEdit(
