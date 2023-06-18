@@ -14,6 +14,7 @@ import 'authentication/authentication.dart';
 import 'color_schemes.g.dart';
 import 'activities/activities.dart';
 import 'login/login.dart';
+import 'signup/signup.dart';
 import 'logs/logs.dart';
 import 'history/history.dart';
 import 'settings/settings.dart';
@@ -102,11 +103,15 @@ class _AuthBasedRepositoryBlocProviderWidgetState
       case AuthenticationStatus.unauthenticated:
         return GoRouter(
           navigatorKey: rootNavigatorKey,
-          initialLocation: '/',
+          initialLocation: '/login',
           routes: [
             GoRoute(
-              path: '/',
+              path: '/login',
               builder: (context, state) => const LoginPage(),
+            ),
+            GoRoute(
+              path: '/signup',
+              builder: (context, state) => const SignupPage(),
             ),
           ],
         );
