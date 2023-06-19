@@ -19,14 +19,6 @@ class LogsPage extends StatelessWidget {
   static Widget? Function() fabBuilder() =>
       () => const _AddEditLogBottomSheetFloatingActionButton();
 
-  void _stopRunningInstance(BuildContext context) {
-    context.read<LogsBloc>().add(
-          LogsInstanceStopped(
-            stopTime: DateTime.now().toLocal(),
-          ),
-        );
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LogsBloc, LogsState>(
@@ -42,93 +34,8 @@ class LogsPage extends StatelessWidget {
             );
 
           case LoadingStatus.success:
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-              child: Column(
-                children: [
-                  if (logsState.runningInstance != null)
-                    OnGoingActivityTile(
-                      instance: logsState.runningInstance!,
-                      activity: logsState
-                          .activityForInstance(logsState.runningInstance!)!,
-                      onDeletePressed: () {
-                        final bloc = context.read<LogsBloc>();
-                        final instance = logsState.runningInstance!;
-
-                        bloc.add(LogsInstanceDeleted(instance: instance));
-
-                        ScaffoldMessenger.of(context)
-                          ..hideCurrentSnackBar()
-                          ..showSnackBar(
-                            SnackBar(
-                              content: const Text('Deleted current log'),
-                              action: SnackBarAction(
-                                label: 'Undo',
-                                onPressed: () {
-                                  bloc.add(
-                                    const LogsTryUndoLastDeleted(),
-                                  );
-                                },
-                              ),
-                              showCloseIcon: true,
-                            ),
-                          );
-                      },
-                      onStopPressed: () {
-                        _stopRunningInstance(context);
-                      },
-                    ),
-                  Expanded(
-                    child: BlocBuilder<ActivitiesBloc, ActivitiesState>(
-                      buildWhen: (previous, current) {
-                        return previous.activities != current.activities;
-                      },
-                      builder: (context, activitiesState) {
-                        return GridView.builder(
-                          itemCount: activitiesState.activities.length,
-                          itemBuilder: (context, index) {
-                            final activity = activitiesState.activities[index];
-                            return Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                ActivityGridTile(
-                                  activity: activity,
-                                  onTap: () {
-                                    if (logsState.runningInstance?.activityId ==
-                                        activity.id) {
-                                      _stopRunningInstance(context);
-                                    } else {
-                                      // add new instance
-                                      context.read<LogsBloc>().add(
-                                            LogsInstanceAdded(
-                                              instance: ActivityInstance(
-                                                activityId: activity.id,
-                                                startAt:
-                                                    DateTime.now().toLocal(),
-                                              ),
-                                            ),
-                                          );
-                                    }
-                                  },
-                                  onLongPress: () {},
-                                ),
-                                if (activity.id ==
-                                    logsState.runningInstance?.activityId)
-                                  const Positioned(
-                                    right: kDefaultPadding * 0.75,
-                                    top: kDefaultPadding * 0.75,
-                                    child: ActiveDot(),
-                                  )
-                              ],
-                            );
-                          },
-                          gridDelegate: kDefaultGridDelegate,
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
+            return _LogsView(
+              logsState: logsState,
             );
           default:
             return Text(
@@ -151,6 +58,142 @@ class _AddEditLogBottomSheetFloatingActionButton extends StatelessWidget {
         LogsForm.showAddEditBottomSheet(context);
       },
       child: const Icon(Icons.add),
+    );
+  }
+}
+
+class _LogsView extends StatefulWidget {
+  const _LogsView({required this.logsState});
+
+  final LogsState logsState;
+
+  @override
+  State<_LogsView> createState() => _LogsViewState();
+}
+
+class _LogsViewState extends State<_LogsView> {
+  void _stopRunningInstance(BuildContext context) {
+    context.read<LogsBloc>().add(
+          LogsInstanceStopped(
+            stopTime: DateTime.now().toLocal(),
+          ),
+        );
+  }
+
+  final ScrollController _gridViewScrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _gridViewScrollController.addListener(() {
+      if (scrollOffset * _gridViewScrollController.offset <= 0) {
+        setState(() {
+          scrollOffset = _gridViewScrollController.offset;
+        });
+      }
+    });
+  }
+
+  double scrollOffset = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        if (widget.logsState.runningInstance != null)
+          Material(
+            elevation: scrollOffset > 0 ? 2 : 0,
+            surfaceTintColor: Theme.of(context).colorScheme.primary,
+            shadowColor: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+              child: OnGoingActivityTile(
+                instance: widget.logsState.runningInstance!,
+                activity: widget.logsState
+                    .activityForInstance(widget.logsState.runningInstance!)!,
+                onDeletePressed: () {
+                  final bloc = context.read<LogsBloc>();
+                  final instance = widget.logsState.runningInstance!;
+
+                  bloc.add(LogsInstanceDeleted(instance: instance));
+
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                      SnackBar(
+                        content: const Text('Deleted current log'),
+                        action: SnackBarAction(
+                          label: 'Undo',
+                          onPressed: () {
+                            bloc.add(
+                              const LogsTryUndoLastDeleted(),
+                            );
+                          },
+                        ),
+                        showCloseIcon: true,
+                      ),
+                    );
+                },
+                onStopPressed: () {
+                  _stopRunningInstance(context);
+                },
+              ),
+            ),
+          ),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+            child: BlocBuilder<ActivitiesBloc, ActivitiesState>(
+              buildWhen: (previous, current) {
+                return previous.activities != current.activities;
+              },
+              builder: (context, activitiesState) {
+                return GridView.builder(
+                  controller: _gridViewScrollController,
+                  itemCount: activitiesState.activities.length,
+                  itemBuilder: (context, index) {
+                    final activity = activitiesState.activities[index];
+                    return Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        ActivityGridTile(
+                          activity: activity,
+                          onTap: () {
+                            if (widget.logsState.runningInstance?.activityId ==
+                                activity.id) {
+                              _stopRunningInstance(context);
+                            } else {
+                              // add new instance
+                              context.read<LogsBloc>().add(
+                                    LogsInstanceAdded(
+                                      instance: ActivityInstance(
+                                        activityId: activity.id,
+                                        startAt: DateTime.now().toLocal(),
+                                      ),
+                                    ),
+                                  );
+                            }
+                          },
+                          onLongPress: () {},
+                        ),
+                        if (activity.id ==
+                            widget.logsState.runningInstance?.activityId)
+                          const Positioned(
+                            right: kDefaultPadding * 0.75,
+                            top: kDefaultPadding * 0.75,
+                            child: ActiveDot(),
+                          )
+                      ],
+                    );
+                  },
+                  gridDelegate: kDefaultGridDelegate,
+                );
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
