@@ -80,12 +80,14 @@ class _LogsViewState extends State<_LogsView> {
         );
   }
 
-  final ScrollController _gridViewScrollController = ScrollController();
+  final ScrollController _gridViewScrollController =
+      ScrollController(initialScrollOffset: 0);
+  late double scrollOffset;
 
   @override
   void initState() {
     super.initState();
-
+    scrollOffset = _gridViewScrollController.initialScrollOffset;
     _gridViewScrollController.addListener(() {
       if (scrollOffset * _gridViewScrollController.offset <= 0) {
         setState(() {
@@ -95,16 +97,14 @@ class _LogsViewState extends State<_LogsView> {
     });
   }
 
-  double scrollOffset = 0;
-
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         if (widget.logsState.runningInstance != null)
           Material(
-            elevation: scrollOffset > 0 ? 2 : 0,
-            surfaceTintColor: Theme.of(context).colorScheme.primary,
+            elevation: scrollOffset > 0 ? 3 : 0,
+            surfaceTintColor: Theme.of(context).colorScheme.surfaceTint,
             shadowColor: Colors.transparent,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
