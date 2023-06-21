@@ -139,7 +139,7 @@ class InstancesRepository {
 
     try {
       final Response response = await dio.put(
-        "/activities/${instance.activityId}/instances/${instance.id}",
+        "/instances/${instance.id}",
         data: instance.toJson(),
         options: Options(
           headers: {

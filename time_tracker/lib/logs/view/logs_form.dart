@@ -13,12 +13,18 @@ import '../../constants/constants.dart';
 class LogsForm extends StatefulWidget {
   const LogsForm({
     super.key,
+    this.instance,
   });
+
+  final ActivityInstance? instance;
 
   @override
   State<LogsForm> createState() => _LogsFormState();
 
-  static Future<T?> showAddEditBottomSheet<T>(BuildContext context) {
+  static Future<T?> showAddEditBottomSheet<T>(
+    BuildContext context, {
+    ActivityInstance? instance,
+  }) {
     return showModalBottomSheet(
       context: context,
       showDragHandle: true,
@@ -31,7 +37,9 @@ class LogsForm extends StatefulWidget {
           padding: const EdgeInsets.symmetric(
             horizontal: kDefaultPadding * 2,
           ),
-          child: const LogsForm(),
+          child: LogsForm(
+            instance: instance,
+          ),
         );
       },
     );
@@ -39,9 +47,25 @@ class LogsForm extends StatefulWidget {
 }
 
 class _LogsFormState extends State<LogsForm> {
-  Activity? selectedActivity;
-  DateTime chosenStartDateTime = DateTime.now();
-  DateTime? chosenEndDateTime;
+  late Activity? selectedActivity;
+  late DateTime chosenStartDateTime;
+  late DateTime? chosenEndDateTime;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.instance == null) {
+      selectedActivity = null;
+      chosenStartDateTime = DateTime.now();
+      chosenEndDateTime = null;
+    } else {
+      selectedActivity =
+          context.read<LogsBloc>().state.activityForInstance(widget.instance!);
+      chosenStartDateTime = widget.instance!.startAt;
+      chosenEndDateTime = widget.instance!.endAt;
+    }
+  }
 
   bool isFormValid() {
     if (selectedActivity == null) return false;
@@ -55,7 +79,7 @@ class _LogsFormState extends State<LogsForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Create a Log",
+          widget.instance == null ? "Create a Log" : "Edit a Log",
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const Padding(padding: EdgeInsets.only(top: kDefaultPadding * 1.75)),
@@ -212,21 +236,34 @@ class _LogsFormState extends State<LogsForm> {
             FilledButton(
               onPressed: isFormValid()
                   ? () {
-                      context.read<LogsBloc>().add(
-                            LogsInstanceAdded(
-                              instance: ActivityInstance(
-                                startAt: chosenStartDateTime.toLocal(),
-                                endAt: chosenEndDateTime?.toLocal(),
-                                activityId: selectedActivity!.id,
+                      if (widget.instance != null) {
+                        context.read<LogsBloc>().add(LogsInstanceEdited(
+                                instance: widget.instance!.copyWith(
+                              startAt: chosenStartDateTime.toLocal(),
+                              endAt: chosenEndDateTime?.toLocal(),
+                              activityId: selectedActivity!.id,
+                            )));
+                      } else {
+                        context.read<LogsBloc>().add(
+                              LogsInstanceAdded(
+                                instance: ActivityInstance(
+                                  startAt: chosenStartDateTime.toLocal(),
+                                  endAt: chosenEndDateTime?.toLocal(),
+                                  activityId: selectedActivity!.id,
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                      }
 
                       ScaffoldMessenger.of(context)
                         ..hideCurrentSnackBar()
                         ..showSnackBar(
-                          const SnackBar(
-                            content: Text("Logged activity"),
+                          SnackBar(
+                            content: Text(
+                              widget.instance == null
+                                  ? "Logged activity"
+                                  : "Edited Log",
+                            ),
                           ),
                         );
 

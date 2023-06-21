@@ -7,6 +7,7 @@ import 'package:moment_dart/moment_dart.dart';
 
 import 'widgets/widgets.dart';
 import '../bloc/history_bloc.dart';
+import '../../logs/logs.dart';
 import '../../widgets/widgets.dart';
 import '../../types.dart';
 
@@ -49,12 +50,33 @@ class HistoryPage extends StatelessWidget {
                 Activity? activity = state.activityForInstance(instance);
                 bool isTileSelected =
                     state.selectedInstances.contains(instance);
+                bool isAnySelectionPresent = state.selectedInstances.isNotEmpty;
 
                 final listTile = HistoryLogListTile(
                   isTileSelected: isTileSelected,
-                  isAnySelectionPresent: state.selectedInstances.isNotEmpty,
+                  isAnySelectionPresent: isAnySelectionPresent,
                   instance: instance,
                   activity: activity,
+                  onTap: () {
+                    if (!isAnySelectionPresent) {
+                      LogsForm.showAddEditBottomSheet(
+                        context,
+                        instance: instance,
+                      );
+
+                      return;
+                    }
+
+                    if (!isTileSelected) {
+                      context.read<HistoryBloc>().add(
+                            HistoryInstanceSelected(instance: instance),
+                          );
+                    } else {
+                      context.read<HistoryBloc>().add(
+                            HistoryInstanceUnselected(instance: instance),
+                          );
+                    }
+                  },
                 );
 
                 Widget? dateListTile = dateHeaderTileBuilder(

@@ -16,11 +16,13 @@ class HistoryLogListTile extends StatelessWidget {
     required this.isAnySelectionPresent,
     required this.instance,
     required this.activity,
+    this.onTap,
   });
 
   final bool isTileSelected;
   final bool isAnySelectionPresent;
   final ActivityInstance instance;
+  final void Function()? onTap;
   final Activity? activity;
 
   @override
@@ -32,19 +34,7 @@ class HistoryLogListTile extends StatelessWidget {
                   : Theme.of(context).colorScheme.onSurfaceVariant,
             );
     return ListTile(
-      onTap: () {
-        if (!isAnySelectionPresent) return;
-
-        if (!isTileSelected) {
-          context.read<HistoryBloc>().add(
-                HistoryInstanceSelected(instance: instance),
-              );
-        } else {
-          context.read<HistoryBloc>().add(
-                HistoryInstanceUnselected(instance: instance),
-              );
-        }
-      },
+      onTap: onTap,
       onLongPress: () {
         if (isTileSelected) return;
 
