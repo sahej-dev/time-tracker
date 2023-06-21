@@ -50,7 +50,6 @@ class AuthenticationRepository {
     final dio = await _dio;
 
     try {
-      print("email pass is: ${email} ${password}");
       final Response response = await dio.post(
         "/signin",
         data: {

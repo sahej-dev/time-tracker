@@ -23,7 +23,7 @@ const port = process.env.PORT || 2000;
 
 initialiseDatabaseConnection();
 
-const whitelist = ["http://localhost:3000"];
+const whitelist = ["http://localhost:3000", "http://localhost:55218"];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || origin === undefined) {

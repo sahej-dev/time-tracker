@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:time_tracker/responsive/responsive.dart';
 
 import '../../types.dart';
 import 'activities_form.dart';
@@ -65,7 +66,7 @@ class _ActivitiesPageView extends StatelessWidget {
                     },
                   );
                 },
-                gridDelegate: kDefaultGridDelegate,
+                gridDelegate: Responsive.getDefaultGridDelegate(context),
               ),
             );
           default:
@@ -85,7 +86,11 @@ class _AddActivityFloatingActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<ActivitiesBloc>();
+    ScreenType screenType = getScreenType(context);
+
     return FloatingActionButton(
+      elevation: screenType != ScreenType.mobile ? 0 : null,
+      hoverElevation: screenType != ScreenType.mobile ? 1 : null,
       onPressed: () {
         ActivityForm.showAddEditBottomSheet(context: context, bloc: bloc);
       },

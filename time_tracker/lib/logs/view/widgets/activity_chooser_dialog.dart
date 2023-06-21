@@ -6,6 +6,7 @@ import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import '../../../activities/activities.dart';
 import '../../../widgets/widgets.dart';
 import '../../../constants/constants.dart';
+import '../../../responsive/responsive.dart';
 
 class ActivityChooserDialog extends StatefulWidget {
   const ActivityChooserDialog({
@@ -87,7 +88,8 @@ class _ActivityChooserDialogState extends State<ActivityChooserDialog> {
                     },
                   );
                 },
-                gridDelegate: kActivityChooserGridDelegate,
+                gridDelegate:
+                    Responsive.getActivityChooserGridDelegate(context),
               ),
             ),
             Row(

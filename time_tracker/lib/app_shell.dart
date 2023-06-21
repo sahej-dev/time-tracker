@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import 'responsive/responsive.dart';
+
 class AppShell extends StatelessWidget {
   const AppShell({
     required this.navigationShell,
@@ -37,28 +39,63 @@ class AppShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ScreenType screenType = getScreenType(context);
+
+    Widget? fab = floatingActionButtonBuilders[navigationShell.currentIndex]();
+    Widget bottomNavBar = NavigationBar(
+      destinations: List.generate(
+        navigationShell.route.branches.length,
+        (index) => NavigationDestination(
+          icon: Icon(_icons[index]),
+          selectedIcon: Icon(_selectedIcons[index]),
+          label: _navLabels[index],
+        ),
+      ),
+      selectedIndex: navigationShell.currentIndex,
+      onDestinationSelected: (int index) => _onTap(context, index),
+      animationDuration: const Duration(milliseconds: 500),
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+    );
+
+    Widget navRail = NavigationRail(
+      leading: fab ??
+          const FloatingActionButton(
+            onPressed: null,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+          ),
+      destinations: List.generate(
+        navigationShell.route.branches.length,
+        (index) => NavigationRailDestination(
+          icon: Icon(_icons[index]),
+          selectedIcon: Icon(_selectedIcons[index]),
+          label: Text(_navLabels[index]),
+        ),
+      ),
+      selectedIndex: navigationShell.currentIndex,
+      onDestinationSelected: (int index) => _onTap(context, index),
+      labelType: NavigationRailLabelType.all,
+      groupAlignment: -0.8,
+    );
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: appBarBuilders[navigationShell.currentIndex](),
       body: SafeArea(
-        child: navigationShell,
+        child: Builder(builder: (context) {
+          if (screenType == ScreenType.mobile) return navigationShell;
+
+          return Row(
+            children: [
+              navRail,
+              Expanded(child: navigationShell),
+            ],
+          );
+        }),
       ),
-      floatingActionButton:
-          floatingActionButtonBuilders[navigationShell.currentIndex](),
-      bottomNavigationBar: NavigationBar(
-        destinations: List.generate(
-          navigationShell.route.branches.length,
-          (index) => NavigationDestination(
-            icon: Icon(_icons[index]),
-            selectedIcon: Icon(_selectedIcons[index]),
-            label: _navLabels[index],
-          ),
-        ),
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: (int index) => _onTap(context, index),
-        animationDuration: const Duration(milliseconds: 500),
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-      ),
+      floatingActionButton: screenType == ScreenType.mobile ? fab : null,
+      bottomNavigationBar:
+          screenType == ScreenType.mobile ? bottomNavBar : null,
     );
   }
 
