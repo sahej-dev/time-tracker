@@ -9,10 +9,7 @@ import '../../../widgets/widgets.dart';
 class IconChooserDialog extends StatefulWidget {
   const IconChooserDialog({
     super.key,
-    this.iconsPerRow = 5,
   });
-
-  final int iconsPerRow;
 
   @override
   State<IconChooserDialog> createState() => _IconChooserDialogState();
@@ -57,7 +54,7 @@ class _IconChooserDialogState extends State<IconChooserDialog> {
                   final res = extractTop(
                     query: value,
                     choices: allKeys,
-                    limit: widget.iconsPerRow * 10,
+                    limit: 100,
                     cutoff: 60,
                   );
                   setState(() {
@@ -69,8 +66,11 @@ class _IconChooserDialogState extends State<IconChooserDialog> {
             const Padding(padding: EdgeInsets.only(top: kDefaultPadding)),
             Expanded(
               child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: widget.iconsPerRow,
+                // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                //   crossAxisCount: iconsPerRow,
+                // ),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 72,
                 ),
                 itemCount: filteredKeys?.length ?? allKeys.length,
                 itemBuilder: (context, index) {

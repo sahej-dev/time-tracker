@@ -140,9 +140,7 @@ class _ActivityFormState extends State<ActivityForm> {
                     IconData? res = await showDialog<IconData>(
                       context: context,
                       builder: (BuildContext context) {
-                        return const IconChooserDialog(
-                          iconsPerRow: 5,
-                        );
+                        return const IconChooserDialog();
                       },
                     );
 
