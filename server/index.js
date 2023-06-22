@@ -24,7 +24,7 @@ const port = process.env.PORT || 2000;
 initialiseDatabaseConnection();
 
 const whitelist = [
-  "http://localhost:3000",
+  "http://localhost:5500",
   "http://localhost:55218",
   process.env.PROD_URI,
 ];

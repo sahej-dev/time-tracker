@@ -322,7 +322,7 @@ class AppView extends StatelessWidget {
 
             return MaterialApp.router(
               routerConfig: goRouter,
-              title: 'Flutter Demo',
+              title: 'Time Tracker',
               theme: _buildTheme(
                 Brightness.light,
                 textThemeGenerator,
