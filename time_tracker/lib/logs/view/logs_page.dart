@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instances_repository/instances_repository.dart';
-import 'package:time_tracker/responsive/responsive.dart';
 
 import 'logs_form.dart';
 import '../bloc/logs_bloc.dart';
@@ -10,6 +9,7 @@ import '../../activities/activities.dart';
 import '../../constants/constants.dart';
 import '../../types.dart';
 import '../../widgets/widgets.dart';
+import '../../responsive/responsive.dart';
 
 class LogsPage extends StatelessWidget {
   const LogsPage({super.key});
@@ -54,11 +54,7 @@ class _AddEditLogBottomSheetFloatingActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ScreenType screenType = getScreenType(context);
-
-    return FloatingActionButton(
-      elevation: screenType != ScreenType.mobile ? 0 : null,
-      hoverElevation: screenType != ScreenType.mobile ? 1 : null,
+    return AdaptiveFab(
       onPressed: () {
         LogsForm.showAddEditBottomSheet(context);
       },
