@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -90,7 +92,8 @@ class _LogsViewState extends State<_LogsView> {
     super.initState();
     scrollOffset = _gridViewScrollController.initialScrollOffset;
     _gridViewScrollController.addListener(() {
-      if (scrollOffset * _gridViewScrollController.offset <= 0) {
+      // update state variable when grid scroll offset has changes to or from zero only
+      if (scrollOffset * _gridViewScrollController.offset == 0) {
         setState(() {
           scrollOffset = _gridViewScrollController.offset;
         });
