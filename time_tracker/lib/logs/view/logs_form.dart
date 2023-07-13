@@ -230,58 +230,80 @@ class _LogsFormState extends State<LogsForm> {
             ),
           ],
         ),
-        const Padding(padding: EdgeInsets.only(top: kDefaultPadding * 1.75)),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+        Stack(
+          alignment: Alignment.topLeft,
           children: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text("Cancel"),
-            ),
-            const Padding(padding: EdgeInsets.only(left: kDefaultPadding)),
-            FilledButton(
-              onPressed: isFormValid()
-                  ? () {
-                      if (widget.instance != null) {
-                        context.read<LogsBloc>().add(LogsInstanceEdited(
-                                instance: widget.instance!.copyWith(
-                              startAt: chosenStartDateTime.toLocal(),
-                              endAt: chosenEndDateTime?.toLocal(),
-                              activityId: selectedActivity!.id,
-                            )));
-                      } else {
-                        context.read<LogsBloc>().add(
-                              LogsInstanceAdded(
-                                instance: ActivityInstance(
-                                  startAt: chosenStartDateTime.toLocal(),
-                                  endAt: chosenEndDateTime?.toLocal(),
-                                  activityId: selectedActivity!.id,
-                                ),
-                              ),
-                            );
-                      }
-
-                      ScaffoldMessenger.of(context)
-                        ..hideCurrentSnackBar()
-                        ..showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              widget.instance == null
-                                  ? "Logged activity"
-                                  : "Edited Log",
-                            ),
-                          ),
-                        );
-
+            if (chosenEndDateTime != null)
+              TextButton(
+                style: const ButtonStyle(
+                  padding: MaterialStatePropertyAll(EdgeInsets.only(left: 1)),
+                  overlayColor: MaterialStatePropertyAll(Colors.transparent),
+                ),
+                onPressed: () {
+                  setState(() {
+                    chosenEndDateTime = null;
+                    FocusScope.of(context).unfocus();
+                  });
+                },
+                child: const Text("Clear end date"),
+              ),
+            Padding(
+              padding: const EdgeInsets.only(top: kDefaultPadding * 2.25),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {
                       Navigator.pop(context);
-                    }
-                  : null,
-              child: const Text("Done"),
-            ),
+                    },
+                    child: const Text("Cancel"),
+                  ),
+                  const Padding(
+                      padding: EdgeInsets.only(left: kDefaultPadding)),
+                  FilledButton(
+                    onPressed: isFormValid()
+                        ? () {
+                            if (widget.instance != null) {
+                              context.read<LogsBloc>().add(LogsInstanceEdited(
+                                      instance: widget.instance!.copyWith(
+                                    startAt: chosenStartDateTime.toLocal(),
+                                    endAt: chosenEndDateTime?.toLocal(),
+                                    activityId: selectedActivity!.id,
+                                  )));
+                            } else {
+                              context.read<LogsBloc>().add(
+                                    LogsInstanceAdded(
+                                      instance: ActivityInstance(
+                                        startAt: chosenStartDateTime.toLocal(),
+                                        endAt: chosenEndDateTime?.toLocal(),
+                                        activityId: selectedActivity!.id,
+                                      ),
+                                    ),
+                                  );
+                            }
+
+                            ScaffoldMessenger.of(context)
+                              ..hideCurrentSnackBar()
+                              ..showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    widget.instance == null
+                                        ? "Logged activity"
+                                        : "Edited Log",
+                                  ),
+                                ),
+                              );
+
+                            Navigator.pop(context);
+                          }
+                        : null,
+                    child: const Text("Done"),
+                  ),
+                ],
+              ),
+            )
           ],
-        )
+        ),
       ],
     );
   }
