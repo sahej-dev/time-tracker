@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import 'package:activities_repository/activities_repository.dart';
@@ -176,14 +178,24 @@ class _LogsFormState extends State<LogsForm> {
                   text: chosenEndDateTime?.toMoment().toLocal().formatDate(),
                 ),
                 onTap: () async {
-                  // showTimePicker(context: context, initialTime: TimeOfDay.now());
                   DateTime? tappedDateTime = await showDatePicker(
                     context: context,
                     initialDate: DateTime.now(),
                     firstDate: DateTime(1970),
                     lastDate: DateTime(2100),
                   );
+
                   if (tappedDateTime != null) {
+                    // set default end time to current time
+                    final DateTime now = DateTime.now();
+                    log(now.toIso8601String());
+                    tappedDateTime = tappedDateTime.copyWith(
+                      hour: now.hour,
+                      minute: now.minute,
+                      second: now.second,
+                      millisecond: now.millisecond,
+                      microsecond: now.microsecond,
+                    );
                     setState(() {
                       chosenEndDateTime = tappedDateTime;
                     });
@@ -204,7 +216,6 @@ class _LogsFormState extends State<LogsForm> {
                   text: chosenEndDateTime?.toMoment().toLocal().formatTime(),
                 ),
                 onTap: () async {
-                  // showTimePicker(context: context, initialTime: TimeOfDay.now());
                   TimeOfDay? tappedTimeOfDay = await showTimePicker(
                     context: context,
                     initialTime: TimeOfDay.fromDateTime(chosenEndDateTime!),
