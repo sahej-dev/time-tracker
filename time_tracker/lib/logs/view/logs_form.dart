@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 import 'package:activities_repository/activities_repository.dart';
@@ -188,7 +186,6 @@ class _LogsFormState extends State<LogsForm> {
                   if (tappedDateTime != null) {
                     // set default end time to current time
                     final DateTime now = DateTime.now();
-                    log(now.toIso8601String());
                     tappedDateTime = tappedDateTime.copyWith(
                       hour: now.hour,
                       minute: now.minute,
