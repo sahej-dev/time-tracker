@@ -7,6 +7,9 @@ node_modules
 *.secrets
 config.js
 backup/
+
+.DS_Store
+
 # auto-generated mac files
 time_tracker/macos/Flutter/GeneratedPluginRegistrant.swift
 time_tracker/macos/Flutter/ephemeral/Flutter-Generated.xcconfig
