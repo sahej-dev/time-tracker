@@ -18,3 +18,23 @@ class SummaryLogsSubscriptionRequested extends SummaryEvent {
   @override
   List<Object?> get props => [];
 }
+
+class SummaryIntervalChangeRequested extends SummaryEvent {
+  const SummaryIntervalChangeRequested({
+    required this.startDate,
+    required this.endDate,
+  });
+
+  final DateTime startDate;
+  final DateTime endDate;
+
+  @override
+  List<Object?> get props => [startDate, endDate];
+}
+
+class SummaryToggleUntrackedVisibility extends SummaryEvent {
+  const SummaryToggleUntrackedVisibility();
+
+  @override
+  List<Object?> get props => [];
+}

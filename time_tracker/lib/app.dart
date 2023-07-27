@@ -19,6 +19,7 @@ import 'signup/signup.dart';
 import 'logs/logs.dart';
 import 'history/history.dart';
 import 'settings/settings.dart';
+import 'summary/summary.dart';
 import 'splash/splash.dart';
 import 'app_shell.dart';
 
@@ -126,7 +127,7 @@ class _AuthBasedRepositoryBlocProviderWidgetState
       case AuthenticationStatus.authenticated:
         return GoRouter(
           navigatorKey: rootNavigatorKey,
-          initialLocation: '/logs',
+          initialLocation: '/analytics',
           routes: [
             StatefulShellRoute.indexedStack(
               builder: (BuildContext context, GoRouterState state,
@@ -135,12 +136,14 @@ class _AuthBasedRepositoryBlocProviderWidgetState
                   navigationShell: navigationShell,
                   appBarBuilders: [
                     LogsPage.appBarBuilder(),
+                    SummaryPage.appBarBuilder(context),
                     HistoryPage.appBarBuilder(context),
                     ActivitiesPage.appBarBuilder(),
                     SettingsPage.appBarBuilder(),
                   ],
                   floatingActionButtonBuilders: [
                     LogsPage.fabBuilder(),
+                    SummaryPage.fabBuilder(),
                     HistoryPage.fabBuilder(),
                     ActivitiesPage.fabBuilder(),
                     SettingsPage.fabBuilder(),
@@ -154,6 +157,15 @@ class _AuthBasedRepositoryBlocProviderWidgetState
                       path: '/logs',
                       name: 'Logs',
                       builder: (context, state) => const LogsPage(),
+                    ),
+                  ],
+                ),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: '/analytics',
+                      name: 'Analytics',
+                      builder: (context, state) => const SummaryPage(),
                     ),
                   ],
                 ),
@@ -233,6 +245,15 @@ class _AuthBasedRepositoryBlocProviderWidgetState
                       activitiesRepository:
                           context.read<ActivitiesRepository>(),
                     )..add(const ActivitiesSubscriptionRequested()),
+                  ),
+                  BlocProvider(
+                    create: (context) => SummaryBloc(
+                      activitiesRepository:
+                          context.read<ActivitiesRepository>(),
+                      instancesRepository: context.read<InstancesRepository>(),
+                    )
+                      ..add(const SummaryActivitiesSubscriptionRequested())
+                      ..add(const SummaryLogsSubscriptionRequested()),
                   ),
                   BlocProvider(
                     create: (context) => LogsBloc(

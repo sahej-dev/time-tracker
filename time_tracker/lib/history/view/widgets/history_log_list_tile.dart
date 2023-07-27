@@ -58,11 +58,7 @@ class HistoryLogListTile extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
       ),
       subtitle: Text(
-        "${instance.startAt.toMoment().toLocal().formatTime()} - ${instance.endAt == null ? 'now' : instance.endAt!.toMoment().toLocal().formatTime()}${instance.endAt == null ? '' : ' (${instance.duration!.toDurationString(
-            form: UnitStringForm.short,
-            dropPrefixOrSuffix: true,
-            format: DurationFormat.hm,
-          )})'}",
+        "${instance.startAt.toMoment().toLocal().formatTime()} - ${instance.endAt == null ? 'now' : instance.endAt!.toMoment().toLocal().formatTime()}${instance.endAt == null ? '' : ' (${instance.duration!.toPrettyString})'}",
         style: subtitleTextStyle,
       ),
     );

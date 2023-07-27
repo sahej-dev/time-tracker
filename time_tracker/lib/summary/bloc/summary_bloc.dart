@@ -1,11 +1,14 @@
 import 'dart:collection';
 
+import 'package:flutter/material.dart';
+
 import 'package:activities_repository/activities_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:instances_repository/instances_repository.dart';
-import 'package:meta/meta.dart';
+import 'package:time_tracker/extensions/extensions.dart';
 
+import '../models/models.dart';
 import '../../types.dart';
 
 part 'summary_event.dart';
@@ -21,6 +24,8 @@ class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
     on<SummaryActivitiesSubscriptionRequested>(
         _onActivitiesSubscriptionRequested);
     on<SummaryLogsSubscriptionRequested>(_onLogsSubscriptionRequested);
+    on<SummaryIntervalChangeRequested>(_onIntervalChangeRequested);
+    on<SummaryToggleUntrackedVisibility>(_onToggleUntracked);
   }
 
   final InstancesRepository _instancesRepository;
@@ -74,5 +79,23 @@ class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
         );
       },
     );
+  }
+
+  void _onIntervalChangeRequested(
+    SummaryIntervalChangeRequested event,
+    Emitter<SummaryState> emit,
+  ) {
+    if (state.loadingStatus != LoadingStatus.success) return;
+
+    emit(state.copyWith(startDate: event.startDate, endDate: event.endDate));
+  }
+
+  void _onToggleUntracked(
+    SummaryToggleUntrackedVisibility event,
+    Emitter<SummaryState> emit,
+  ) {
+    if (state.loadingStatus != LoadingStatus.success) return;
+
+    emit(state.copyWith(showUntracked: !state.showUntracked));
   }
 }
