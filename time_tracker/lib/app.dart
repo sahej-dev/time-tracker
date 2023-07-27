@@ -127,7 +127,7 @@ class _AuthBasedRepositoryBlocProviderWidgetState
       case AuthenticationStatus.authenticated:
         return GoRouter(
           navigatorKey: rootNavigatorKey,
-          initialLocation: '/analytics',
+          initialLocation: '/logs',
           routes: [
             StatefulShellRoute.indexedStack(
               builder: (BuildContext context, GoRouterState state,
