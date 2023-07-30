@@ -52,7 +52,7 @@ class ActivityGridTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Icon(
-                  activity.getIconData(),
+                  activity.iconData,
                   color: color,
                   size: iconSize ?? (kDefaultIconSize * 1.5),
                 ),

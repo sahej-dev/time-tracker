@@ -1,12 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'activity.dart';
+part of 'network_activity.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Activity _$$_ActivityFromJson(Map<String, dynamic> json) => _$_Activity(
+_$_NetworkActivity _$$_NetworkActivityFromJson(Map<String, dynamic> json) =>
+    _$_NetworkActivity(
       id: json['id'] as String,
       label: json['label'] as String,
       icon: IconModel.fromJson(json['icon'] as Map<String, dynamic>),
@@ -14,7 +15,7 @@ _$_Activity _$$_ActivityFromJson(Map<String, dynamic> json) => _$_Activity(
       color: json['color'] as int?,
     );
 
-Map<String, dynamic> _$$_ActivityToJson(_$_Activity instance) =>
+Map<String, dynamic> _$$_NetworkActivityToJson(_$_NetworkActivity instance) =>
     <String, dynamic>{
       'id': instance.id,
       'label': instance.label,

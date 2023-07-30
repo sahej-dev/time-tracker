@@ -1,21 +1,34 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter/material.dart';
 
-import 'icon_model.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:uuid/uuid.dart';
 
 part 'activity.freezed.dart';
-part 'activity.g.dart';
 
 @freezed
 class Activity with _$Activity {
-  @JsonSerializable(explicitToJson: true)
-  const factory Activity({
+  const factory Activity._def({
     required String id,
     required String label,
-    required IconModel icon,
+    required IconData iconData,
     required DateTime createdAt,
-    int? color,
+    Color? color,
   }) = _Activity;
 
-  factory Activity.fromJson(Map<String, dynamic> json) =>
-      _$ActivityFromJson(json);
+  factory Activity({
+    String? id,
+    required String label,
+    required IconData iconData,
+    DateTime? createdAt,
+    Color? color,
+  }) {
+    final uuid = Uuid();
+    return Activity._def(
+      id: id ?? uuid.v4(),
+      label: label,
+      iconData: iconData,
+      createdAt: createdAt ?? DateTime.now(),
+      color: color,
+    );
+  }
 }

@@ -95,14 +95,16 @@ class SummaryState extends Equatable {
             instance.startAt.isBefore(endDate))
         .toList();
 
-    if (instancesInInterval.first.startAt.isBefore(startDate)) {
-      instancesInInterval.first =
-          instancesInInterval.first.copyWith(startAt: startDate);
-    }
+    if (instancesInInterval.isNotEmpty) {
+      if (instancesInInterval.first.startAt.isBefore(startDate)) {
+        instancesInInterval.first =
+            instancesInInterval.first.copyWith(startAt: startDate);
+      }
 
-    if (instancesInInterval.last.endAt!.isAfter(endDate)) {
-      instancesInInterval.last =
-          instancesInInterval.last.copyWith(endAt: endDate);
+      if (instancesInInterval.last.endAt!.isAfter(endDate)) {
+        instancesInInterval.last =
+            instancesInInterval.last.copyWith(endAt: endDate);
+      }
     }
 
     int totalMinutes = showUntracked
@@ -143,22 +145,7 @@ class SummaryState extends Equatable {
     if (showUntracked) {
       _statistics!.add(
         Statistic(
-          activity: Activity(
-            id: '',
-            label: 'Untracked',
-            icon: IconModel(
-              id: '',
-              codepoint: Icons.no_sim.codePoint,
-              metadata: IconMetadata(
-                id: '',
-                createdAt: DateTime.now(),
-                fontFamily: Icons.no_sim.fontFamily,
-                fontPackage: Icons.no_sim.fontPackage,
-              ),
-              createdAt: DateTime.now(),
-            ),
-            createdAt: DateTime.now(),
-          ),
+          activity: Activity(label: 'Untracked', iconData: Icons.no_sim),
           duration: Duration(minutes: totalMinutes - minutesTracked),
           percentage: 1 - minutesTracked / totalMinutes,
         ),

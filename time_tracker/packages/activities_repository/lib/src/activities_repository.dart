@@ -1,10 +1,10 @@
 // ignore_for_file: deprecated_member_use
-
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'models/models.dart';
+import 'models/network_activity.dart';
 
 class ActivitiesRepository {
   final _activityStreamController = BehaviorSubject<List<Activity>>();
@@ -55,7 +55,8 @@ class ActivitiesRepository {
       final List<Activity> activities = [];
 
       for (int i = 0; i < rawActivitiesList.length; i++) {
-        activities.add(Activity.fromJson(rawActivitiesList[i]));
+        activities.add(NetworkActivity.fromJson(rawActivitiesList[i])
+            .asExternalActivity());
       }
 
       _activityStreamController.add(activities);
@@ -92,10 +93,10 @@ class ActivitiesRepository {
         "/",
         data: {
           "label": activity.label,
-          "color": activity.color,
-          "icon_codepoint": activity.icon.codepoint,
-          "icon_family": activity.icon.metadata.fontFamily,
-          "icon_package": activity.icon.metadata.fontPackage,
+          "color": activity.color?.value,
+          "icon_codepoint": activity.iconData.codePoint,
+          "icon_family": activity.iconData.fontFamily,
+          "icon_package": activity.iconData.fontPackage,
         },
         options: Options(
           headers: {
@@ -105,8 +106,9 @@ class ActivitiesRepository {
       );
 
       if (response.statusCode == 200) {
-        final Activity postedActivity = Activity.fromJson(response.data);
-        revertActivities.add(postedActivity);
+        final NetworkActivity postedActivity =
+            NetworkActivity.fromJson(response.data);
+        revertActivities.add(postedActivity.asExternalActivity());
         _activityStreamController.add(revertActivities);
       } else {
         _activityStreamController.add(revertActivities);
@@ -144,10 +146,10 @@ class ActivitiesRepository {
         "/${activity.id}",
         data: {
           "label": activity.label,
-          "color": activity.color,
-          "icon_codepoint": activity.icon.codepoint,
-          "icon_family": activity.icon.metadata.fontFamily,
-          "icon_package": activity.icon.metadata.fontPackage,
+          "color": activity.color?.value,
+          "icon_codepoint": activity.iconData.codePoint,
+          "icon_family": activity.iconData.fontFamily,
+          "icon_package": activity.iconData.fontPackage,
         },
         options: Options(
           headers: {
@@ -157,8 +159,9 @@ class ActivitiesRepository {
       );
 
       if (response.statusCode == 200) {
-        final Activity editedActivity = Activity.fromJson(response.data);
-        revertActivities[idx] = editedActivity;
+        final NetworkActivity editedActivity =
+            NetworkActivity.fromJson(response.data);
+        revertActivities[idx] = editedActivity.asExternalActivity();
         _activityStreamController.add(revertActivities);
       } else {
         _activityStreamController.add(revertActivities);
@@ -227,8 +230,9 @@ class ActivitiesRepository {
       final Response response = await dio.patch("/${activity.id}");
 
       if (response.statusCode == 200) {
-        final Activity restoredActivity = Activity.fromJson(response.data);
-        revertActivities.add(restoredActivity);
+        final NetworkActivity restoredActivity =
+            NetworkActivity.fromJson(response.data);
+        revertActivities.add(restoredActivity.asExternalActivity());
 
         _activityStreamController.add(revertActivities);
       } else {

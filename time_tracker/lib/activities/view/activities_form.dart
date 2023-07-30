@@ -51,13 +51,13 @@ class ActivityForm extends StatefulWidget {
 }
 
 class _ActivityFormState extends State<ActivityForm> {
-  late Icon chosenIcon;
+  late IconData chosenIconData;
   late Color chosenColor;
   late TextEditingController activityNameController;
   Activity? activity;
 
-  Icon getDefaultIcon() {
-    return const Icon(MdiIcons.pencil);
+  IconData getDefaultIcon() {
+    return MdiIcons.pencil;
   }
 
   Color getDefaultColor() {
@@ -74,20 +74,15 @@ class _ActivityFormState extends State<ActivityForm> {
     if (activityIdx == -1) {
       // show page for creating an activity
       activityNameController = TextEditingController();
-      chosenIcon = getDefaultIcon();
+      chosenIconData = getDefaultIcon();
       chosenColor = getDefaultColor();
     } else {
       // show page for editing existing activity
       activity = widget._activitiesBloc.state.activities[activityIdx];
 
       activityNameController = TextEditingController(text: activity!.label);
-      chosenIcon = Icon(IconData(
-        activity!.icon.codepoint,
-        fontFamily: activity!.icon.metadata.fontFamily,
-        fontPackage: activity!.icon.metadata.fontPackage,
-      ));
-      chosenColor =
-          activity!.color != null ? Color(activity!.color!) : getDefaultColor();
+      chosenIconData = activity!.iconData;
+      chosenColor = activity!.color ?? getDefaultColor();
     }
   }
 
@@ -146,11 +141,11 @@ class _ActivityFormState extends State<ActivityForm> {
 
                     if (res != null) {
                       setState(() {
-                        chosenIcon = Icon(res);
+                        chosenIconData = res;
                       });
                     }
                   },
-                  icon: chosenIcon,
+                  icon: Icon(chosenIconData),
                 ),
               ],
             ),
@@ -236,21 +231,9 @@ class _ActivityFormState extends State<ActivityForm> {
                           widget._activitiesBloc.add(
                             ActivitiesNewAdded(
                               activity: Activity(
-                                id: '',
                                 label: activityNameController.text,
-                                color: chosenColor.value,
-                                createdAt: DateTime.now(),
-                                icon: IconModel(
-                                  id: '',
-                                  codepoint: chosenIcon.icon!.codePoint,
-                                  createdAt: DateTime.now(),
-                                  metadata: IconMetadata(
-                                    id: '',
-                                    fontFamily: chosenIcon.icon?.fontFamily,
-                                    fontPackage: chosenIcon.icon?.fontPackage,
-                                    createdAt: DateTime.now(),
-                                  ),
-                                ),
+                                iconData: chosenIconData,
+                                color: chosenColor,
                               ),
                             ),
                           );
@@ -258,21 +241,10 @@ class _ActivityFormState extends State<ActivityForm> {
                           widget._activitiesBloc.add(
                             ActivitiesEdited(
                               activity: Activity(
-                                id: widget.id!,
+                                id: widget.id,
                                 label: activityNameController.text,
-                                color: chosenColor.value,
-                                createdAt: DateTime.now(),
-                                icon: IconModel(
-                                  id: '',
-                                  codepoint: chosenIcon.icon!.codePoint,
-                                  createdAt: DateTime.now(),
-                                  metadata: IconMetadata(
-                                    id: '',
-                                    fontFamily: chosenIcon.icon?.fontFamily,
-                                    fontPackage: chosenIcon.icon?.fontPackage,
-                                    createdAt: DateTime.now(),
-                                  ),
-                                ),
+                                iconData: chosenIconData,
+                                color: chosenColor,
                               ),
                             ),
                           );

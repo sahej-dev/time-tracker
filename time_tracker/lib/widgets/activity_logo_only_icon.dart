@@ -22,7 +22,7 @@ class ActivityLogoOnlyIcon extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(kDefaultPadding * 0.5),
         child: Icon(
-          activity?.getIconData() ?? Icons.cancel,
+          activity?.iconData ?? Icons.cancel,
           color: activity?.getColor(context) ??
               Theme.of(context).colorScheme.primary,
         ),
