@@ -86,7 +86,7 @@ class RealtimeActivitiesRepository {
       "icon_codepoint": activity.iconData.codePoint,
       "icon_family": activity.iconData.fontFamily,
       "icon_package": activity.iconData.fontPackage,
-      "createdAt": activity.createdAt.toIso8601String(),
+      "createdAt": activity.createdAt.toUtc().toIso8601String(),
     });
   }
 
@@ -107,7 +107,7 @@ class RealtimeActivitiesRepository {
         "icon_codepoint": activity.iconData.codePoint,
         "icon_family": activity.iconData.fontFamily,
         "icon_package": activity.iconData.fontPackage,
-        "updatedAt": DateTime.now().toIso8601String()
+        "updatedAt": DateTime.now().toUtc().toIso8601String()
       },
     );
   }
