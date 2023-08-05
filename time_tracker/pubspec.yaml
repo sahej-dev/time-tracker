@@ -49,6 +49,7 @@ dependencies:
   path_provider: ^2.0.15
   flavor: ^2.0.0
   icons_launcher: ^2.1.1
+  socket_io_client: ^2.0.3+1
 
   # keep the static version of material_design_icons_flutter as the
   # library does not follow semantic versioning
@@ -58,8 +59,8 @@ dependencies:
     path: packages/authentication_repository
   user_repository:
     path: packages/user_repository
-  activities_repository:
-    path: packages/activities_repository
+  realtime_activities_repository:
+    path: packages/realtime_activities_repository
   instances_repository:
     path: packages/instances_repository
 

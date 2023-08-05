@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:activities_repository/activities_repository.dart';
+import 'package:realtime_activities_repository/realtime_activities_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:instances_repository/instances_repository.dart';
@@ -12,7 +12,7 @@ part 'logs_state.dart';
 
 class LogsBloc extends Bloc<LogsEvent, LogsState> {
   LogsBloc(
-      {required ActivitiesRepository activitiesRepository,
+      {required RealtimeActivitiesRepository activitiesRepository,
       required InstancesRepository instancesRepository})
       : _activitiesRepository = activitiesRepository,
         _instancesRepository = instancesRepository,
@@ -27,7 +27,7 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
   }
 
   final InstancesRepository _instancesRepository;
-  final ActivitiesRepository _activitiesRepository;
+  final RealtimeActivitiesRepository _activitiesRepository;
 
   Future<void> _onActivitiesSubscriptionRequested(
     LogsActivitiesSubscriptionRequested event,

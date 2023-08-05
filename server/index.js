@@ -1,10 +1,14 @@
 const fs = require("fs");
 
 const express = require("express");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const jwt = require("jsonwebtoken");
 
+const { User } = require("./models");
 const { initialiseDatabaseConnection } = require("./db/init");
 const { logger } = require("./logs/logger_config");
 const { authenticateToken } = require("./middleware");
@@ -18,7 +22,10 @@ const { userRouter } = require("./users");
 const { activityRouter } = require("./activities");
 const { instancesRouter } = require("./instances");
 
+const registerActivitiesHandler = require("./activities/activity.handler");
+
 const app = express();
+const httpServer = createServer(app);
 const port = process.env.PORT || 2000;
 
 initialiseDatabaseConnection();
@@ -45,6 +52,51 @@ const rateLimiterConfig = rateLimit({
   standardHeaders: false, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
+
+// ------------------------------
+
+const io = new Server(httpServer, {
+  cors: corsOptions,
+});
+
+io.engine.use(helmet());
+
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+
+  if (!token) return next(new Error("invalid bearer token"));
+  console.log("verifying the token", Date.now());
+
+  jwt.verify(token, process.env.TOKEN_SECRET, async (err, user) => {
+    // if (process.env.NODE_ENV !== "production") console.log("AUTH ERR:", err);
+
+    // console.log("YSY: ", err);
+    if (err) return next(new Error("Forbidden"));
+    const dbUser = await User.findByPk(user.id);
+
+    if (!dbUser) return next(new Error("Forbidden"));
+
+    socket.request.user = {
+      ...user,
+      ...dbUser.dataValues,
+    };
+
+    if (process.env.NODE_ENV !== "production")
+      console.log("SOCKET USER: ", socket.request.user);
+
+    next();
+  });
+});
+
+io.on("connection", (socket) => {
+  console.log("CONNECTED: ", socket.request.user);
+
+  socket.join(socket.request.user.id);
+
+  registerActivitiesHandler(io, socket);
+});
+
+// ------------------------------------
 
 app.use(express.json());
 app.use(helmet());
@@ -114,7 +166,7 @@ app.use(function parseResponseValue(req, res, next) {
   res.json(resJson);
 });
 
-app.listen(port, () => {
+httpServer.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
   console.log(`NODE_ENV is: ${process.env.NODE_ENV}`);
   console.log(`JWT_LIFETIME_SECS is: ${process.env.JWT_LIFETIME_SECS}`);

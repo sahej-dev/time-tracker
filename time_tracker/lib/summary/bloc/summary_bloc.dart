@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 
-import 'package:activities_repository/activities_repository.dart';
+import 'package:realtime_activities_repository/realtime_activities_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:instances_repository/instances_repository.dart';
@@ -16,7 +16,7 @@ part 'summary_state.dart';
 
 class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
   SummaryBloc(
-      {required ActivitiesRepository activitiesRepository,
+      {required RealtimeActivitiesRepository activitiesRepository,
       required InstancesRepository instancesRepository})
       : _activitiesRepository = activitiesRepository,
         _instancesRepository = instancesRepository,
@@ -29,7 +29,7 @@ class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
   }
 
   final InstancesRepository _instancesRepository;
-  final ActivitiesRepository _activitiesRepository;
+  final RealtimeActivitiesRepository _activitiesRepository;
 
   Future<void> _onActivitiesSubscriptionRequested(
     SummaryActivitiesSubscriptionRequested event,

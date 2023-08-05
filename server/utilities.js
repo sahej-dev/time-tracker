@@ -24,6 +24,10 @@ function isActivityOwnerOrSuperuser(req, activity) {
   );
 }
 
+function isUserActivityOwnerOrSuperuser(user, activity) {
+  return (activity && user.id === activity.user_id) || user.is_super_user;
+}
+
 async function deleteWithChildTablesCascade({
   sequelize,
   table,
@@ -112,5 +116,6 @@ async function restoreWithChildTablesCascade({
 exports.deleteAllNestedProperties = deleteAllNestedProperties;
 exports.setNestedFalseyValuesToNull = setNestedFalseyValuesToNull;
 exports.isActivityOwnerOrSuperuser = isActivityOwnerOrSuperuser;
+exports.isUserActivityOwnerOrSuperuser = isUserActivityOwnerOrSuperuser;
 exports.deleteWithChildTablesCascade = deleteWithChildTablesCascade;
 exports.restoreWithChildTablesCascade = restoreWithChildTablesCascade;

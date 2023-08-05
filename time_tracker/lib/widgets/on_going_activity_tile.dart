@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:activities_repository/activities_repository.dart';
+import 'package:realtime_activities_repository/realtime_activities_repository.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:instances_repository/instances_repository.dart';
 

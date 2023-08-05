@@ -9,7 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:instances_repository/instances_repository.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:authentication_repository/authentication_repository.dart';
-import 'package:activities_repository/activities_repository.dart';
+import 'package:realtime_activities_repository/realtime_activities_repository.dart';
 
 import 'authentication/authentication.dart';
 import 'color_schemes.g.dart';
@@ -224,10 +224,10 @@ class _AuthBasedRepositoryBlocProviderWidgetState
           return MultiRepositoryProvider(
             providers: [
               RepositoryProvider(
-                create: (context) => ActivitiesRepository(
+                create: (context) => RealtimeActivitiesRepository(
                   secureStorage: widget.secureStorage,
-                  userId: context.read<AuthenticationBloc>().state.user!.id,
                   apiUrl: Flavor.I.getString(Keys.apiUrl)!,
+                  socket: context.read<AuthenticationRepository>().socket!,
                 ),
               ),
               RepositoryProvider(
@@ -243,13 +243,13 @@ class _AuthBasedRepositoryBlocProviderWidgetState
                   BlocProvider<ActivitiesBloc>(
                     create: (context) => ActivitiesBloc(
                       activitiesRepository:
-                          context.read<ActivitiesRepository>(),
+                          context.read<RealtimeActivitiesRepository>(),
                     )..add(const ActivitiesSubscriptionRequested()),
                   ),
                   BlocProvider(
                     create: (context) => SummaryBloc(
                       activitiesRepository:
-                          context.read<ActivitiesRepository>(),
+                          context.read<RealtimeActivitiesRepository>(),
                       instancesRepository: context.read<InstancesRepository>(),
                     )
                       ..add(const SummaryActivitiesSubscriptionRequested())
@@ -258,7 +258,7 @@ class _AuthBasedRepositoryBlocProviderWidgetState
                   BlocProvider(
                     create: (context) => LogsBloc(
                       activitiesRepository:
-                          context.read<ActivitiesRepository>(),
+                          context.read<RealtimeActivitiesRepository>(),
                       instancesRepository: context.read<InstancesRepository>(),
                     )
                       ..add(const LogsActivitiesSubscriptionRequested())
@@ -267,7 +267,7 @@ class _AuthBasedRepositoryBlocProviderWidgetState
                   BlocProvider(
                     create: (context) => HistoryBloc(
                       activitiesRepository:
-                          context.read<ActivitiesRepository>(),
+                          context.read<RealtimeActivitiesRepository>(),
                       instancesRepository: context.read<InstancesRepository>(),
                     )
                       ..add(const HistoryActivitiesSubscriptionsRequested())

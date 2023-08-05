@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:activities_repository/activities_repository.dart';
+import 'package:realtime_activities_repository/realtime_activities_repository.dart';
 
 import '../../types.dart';
 
@@ -8,7 +8,7 @@ part 'activities_event.dart';
 part 'activities_state.dart';
 
 class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
-  ActivitiesBloc({required ActivitiesRepository activitiesRepository})
+  ActivitiesBloc({required RealtimeActivitiesRepository activitiesRepository})
       : _activitiesRepository = activitiesRepository,
         super(const ActivitiesState.initial()) {
     on<ActivitiesSubscriptionRequested>(_onSubscriptionRequested);
@@ -18,7 +18,7 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
     on<ActivitiesTryUndoLastDeleted>(_onLastDeletedUndoRequested);
   }
 
-  final ActivitiesRepository _activitiesRepository;
+  final RealtimeActivitiesRepository _activitiesRepository;
 
   Future<void> _onSubscriptionRequested(
     ActivitiesSubscriptionRequested event,

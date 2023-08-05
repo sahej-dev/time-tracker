@@ -1,5 +1,6 @@
 part of 'summary_bloc.dart';
 
+// ignore: must_be_immutable
 class SummaryState extends Equatable {
   final LoadingStatus _activitiesLoadingStatus;
   final LoadingStatus _logsLoadingStatus;

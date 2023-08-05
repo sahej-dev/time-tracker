@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 enum AuthenticationStatus { unknown, authenticated, unauthenticated }
 
 class AuthenticationRepository {
   final String apiUrl;
-  final _controller = StreamController<AuthenticationStatus>();
+  final _controller = StreamController<AuthenticationStatus>.broadcast();
+  late final StreamSubscription<AuthenticationStatus>
+      _internalStatusSubscription;
   final FlutterSecureStorage secureStorage;
 
   AuthenticationRepository({
@@ -15,9 +18,31 @@ class AuthenticationRepository {
     required this.secureStorage,
   }) {
     print("API URL: ${apiUrl}");
+
+    _internalStatusSubscription = status.listen((event) async {
+      switch (event) {
+        case AuthenticationStatus.authenticated:
+          if (socket != null) return;
+
+          String? token = await readToken();
+          if (token == null) return;
+
+          socket = IO.io(
+            apiUrl,
+            IO.OptionBuilder()
+                .setTransports(['websocket']) // for Flutter or Dart VM
+                .setAuth({"token": token}).build(),
+          );
+          break;
+
+        default:
+          socket = null;
+      }
+    });
   }
 
   Dio? __dio;
+  IO.Socket? socket;
 
   Future<Dio> get _dio async {
     if (__dio != null) {
@@ -41,6 +66,10 @@ class AuthenticationRepository {
 
   Future<void> storeToken(String token) async {
     return secureStorage.write(key: 'token', value: token);
+  }
+
+  Future<String?> readToken() async {
+    return await secureStorage.read(key: 'token');
   }
 
   Future<void> logIn({
@@ -116,5 +145,8 @@ class AuthenticationRepository {
     _controller.add(AuthenticationStatus.unauthenticated);
   }
 
-  void dispose() => _controller.close();
+  void dispose() {
+    _internalStatusSubscription.cancel();
+    _controller.close();
+  }
 }
