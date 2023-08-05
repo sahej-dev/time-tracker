@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.get("/", async (req, res, next) => {
   if (req.user.is_super_user) {
-    const instances = ActivityInstance.findAll({
+    const instances = await ActivityInstance.findAll({
       include: { model: Activity, as: "activity" },
     });
 

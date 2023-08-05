@@ -23,6 +23,7 @@ const { activityRouter } = require("./activities");
 const { instancesRouter } = require("./instances");
 
 const registerActivitiesHandler = require("./activities/activity.handler");
+const registerInstancesHandler = require("./instances/instance.handler");
 
 const app = express();
 const httpServer = createServer(app);
@@ -94,6 +95,7 @@ io.on("connection", (socket) => {
   socket.join(socket.request.user.id);
 
   registerActivitiesHandler(io, socket);
+  registerInstancesHandler(io, socket);
 });
 
 // ------------------------------------

@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
-import 'package:instances_repository/instances_repository.dart';
+import 'package:realtime_instances_repository/realtime_instances_repository.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:realtime_activities_repository/realtime_activities_repository.dart';
@@ -231,9 +231,10 @@ class _AuthBasedRepositoryBlocProviderWidgetState
                 ),
               ),
               RepositoryProvider(
-                create: (context) => InstancesRepository(
+                create: (context) => RealtimeInstancesRepository(
                   secureStorage: widget.secureStorage,
                   apiUrl: Flavor.I.getString(Keys.apiUrl)!,
+                  socket: context.read<AuthenticationRepository>().socket!,
                 ),
               ),
             ],
@@ -250,7 +251,8 @@ class _AuthBasedRepositoryBlocProviderWidgetState
                     create: (context) => SummaryBloc(
                       activitiesRepository:
                           context.read<RealtimeActivitiesRepository>(),
-                      instancesRepository: context.read<InstancesRepository>(),
+                      instancesRepository:
+                          context.read<RealtimeInstancesRepository>(),
                     )
                       ..add(const SummaryActivitiesSubscriptionRequested())
                       ..add(const SummaryLogsSubscriptionRequested()),
@@ -259,7 +261,8 @@ class _AuthBasedRepositoryBlocProviderWidgetState
                     create: (context) => LogsBloc(
                       activitiesRepository:
                           context.read<RealtimeActivitiesRepository>(),
-                      instancesRepository: context.read<InstancesRepository>(),
+                      instancesRepository:
+                          context.read<RealtimeInstancesRepository>(),
                     )
                       ..add(const LogsActivitiesSubscriptionRequested())
                       ..add(const LogsSubscriptionRequested()),
@@ -268,7 +271,8 @@ class _AuthBasedRepositoryBlocProviderWidgetState
                     create: (context) => HistoryBloc(
                       activitiesRepository:
                           context.read<RealtimeActivitiesRepository>(),
-                      instancesRepository: context.read<InstancesRepository>(),
+                      instancesRepository:
+                          context.read<RealtimeInstancesRepository>(),
                     )
                       ..add(const HistoryActivitiesSubscriptionsRequested())
                       ..add(

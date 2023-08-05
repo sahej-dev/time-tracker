@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:realtime_activities_repository/realtime_activities_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:instances_repository/instances_repository.dart';
-import 'package:time_tracker/extensions/extensions.dart';
+import 'package:realtime_instances_repository/realtime_instances_repository.dart';
 
+import '../../extensions/extensions.dart';
 import '../models/models.dart';
 import '../../types.dart';
 
@@ -17,7 +17,7 @@ part 'summary_state.dart';
 class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
   SummaryBloc(
       {required RealtimeActivitiesRepository activitiesRepository,
-      required InstancesRepository instancesRepository})
+      required RealtimeInstancesRepository instancesRepository})
       : _activitiesRepository = activitiesRepository,
         _instancesRepository = instancesRepository,
         super(SummaryState.initial()) {
@@ -28,7 +28,7 @@ class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
     on<SummaryToggleUntrackedVisibility>(_onToggleUntracked);
   }
 
-  final InstancesRepository _instancesRepository;
+  final RealtimeInstancesRepository _instancesRepository;
   final RealtimeActivitiesRepository _activitiesRepository;
 
   Future<void> _onActivitiesSubscriptionRequested(

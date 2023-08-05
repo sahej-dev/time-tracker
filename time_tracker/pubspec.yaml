@@ -61,8 +61,10 @@ dependencies:
     path: packages/user_repository
   realtime_activities_repository:
     path: packages/realtime_activities_repository
-  instances_repository:
-    path: packages/instances_repository
+  # instances_repository:
+  #   path: packages/instances_repository
+  realtime_instances_repository:
+    path: packages/realtime_instances_repository
 
 dev_dependencies:
   flutter_test:

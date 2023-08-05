@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:realtime_activities_repository/realtime_activities_repository.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:instances_repository/instances_repository.dart';
+import 'package:realtime_instances_repository/realtime_instances_repository.dart';
 
 import '../../constants/constants.dart';
 import '../../widgets/widgets.dart';

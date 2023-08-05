@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:instances_repository/instances_repository.dart';
+import 'package:realtime_instances_repository/realtime_instances_repository.dart';
 
 import 'logs_form.dart';
 import '../bloc/logs_bloc.dart';

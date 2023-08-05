@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:realtime_activities_repository/realtime_activities_repository.dart';
-import 'package:instances_repository/instances_repository.dart';
+import 'package:realtime_instances_repository/realtime_instances_repository.dart';
 import 'package:moment_dart/moment_dart.dart';
 
 import 'widgets/widgets.dart';
