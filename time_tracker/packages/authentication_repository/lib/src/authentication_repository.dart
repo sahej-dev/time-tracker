@@ -36,6 +36,7 @@ class AuthenticationRepository {
           break;
 
         default:
+          socket?.disconnect();
           socket = null;
       }
     });
