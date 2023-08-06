@@ -33,7 +33,7 @@ initialiseDatabaseConnection();
 
 const whitelist = [
   "http://localhost:5500",
-  "http://localhost:55218",
+  "http://localhost:53653",
   process.env.PROD_URI,
 ];
 const corsOptions = {

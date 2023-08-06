@@ -12,30 +12,41 @@ class SummaryPage extends StatelessWidget {
   const SummaryPage({super.key});
 
   static PreferredSizeWidget? Function() appBarBuilder(BuildContext context) =>
-      () => AppBar(
-            title: const Text("Analytics"),
-            actions: [
-              const _DateRangeSelector(),
-              PopupMenuButton(
-                icon: const Icon(MdiIcons.wrench),
-                itemBuilder: (context) {
-                  final SummaryBloc bloc = context.read<SummaryBloc>();
+      () => PreferredSize(
+            preferredSize: Size.fromHeight(
+              AppBarTheme.of(context).toolbarHeight ?? kToolbarHeight,
+            ),
+            child: AppBar(
+              title: const Text("Analytics"),
+              actions: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const _DateRangeSelector(),
+                    PopupMenuButton(
+                      icon: const Icon(MdiIcons.wrench),
+                      itemBuilder: (context) {
+                        final SummaryBloc bloc = context.read<SummaryBloc>();
 
-                  return [
-                    PopupMenuItem(
-                      onTap: () {
-                        bloc.add(const SummaryToggleUntrackedVisibility());
+                        return [
+                          PopupMenuItem(
+                            onTap: () {
+                              bloc.add(
+                                  const SummaryToggleUntrackedVisibility());
+                            },
+                            child: Text(
+                              bloc.state.showUntracked
+                                  ? "Hide untracked"
+                                  : "Show untracked",
+                            ),
+                          ),
+                        ];
                       },
-                      child: Text(
-                        bloc.state.showUntracked
-                            ? "Hide untracked"
-                            : "Show untracked",
-                      ),
                     ),
-                  ];
-                },
-              )
-            ],
+                  ],
+                )
+              ],
+            ),
           );
   static Widget? Function() fabBuilder() => () => null;
 
