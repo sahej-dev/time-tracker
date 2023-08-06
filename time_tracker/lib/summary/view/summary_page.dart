@@ -37,7 +37,7 @@ class SummaryPage extends StatelessWidget {
               )
             ],
           );
-  static Widget? Function() fabBuilder() => () => const SizedBox.shrink();
+  static Widget? Function() fabBuilder() => () => null;
 
   @override
   Widget build(BuildContext context) {
