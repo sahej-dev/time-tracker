@@ -9,5 +9,5 @@ class Config {
     return "http://localhost:2000";
   }
 
-  static const String prodBaseUrl = "https://time.joytracker.xyz";
+  static const String prodBaseUrl = "https://timetrack.sahej.io";
 }
