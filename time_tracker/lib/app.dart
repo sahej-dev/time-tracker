@@ -347,6 +347,7 @@ class AppView extends StatelessWidget {
 
             return MaterialApp.router(
               routerConfig: goRouter,
+              debugShowCheckedModeBanner: false,
               title: 'Time Tracker',
               theme: _buildTheme(
                 Brightness.light,
